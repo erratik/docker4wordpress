@@ -1,0 +1,15 @@
+
+<ul>
+    {{#each this}}
+
+    <li data-channel-id="{{this.pid}}" class="{{this.enabled}}">
+        <a href="/channels/?playid={{this.pid}}">
+            {{#if this.cutv_channel_img }}<img src="/wp-content/uploads/channels/{{this.cutv_channel_img}}">
+            {{^}}<img src="https://placeholdit.imgix.net/~text?txtsize=33&txt={{this.playlist_name}}&w=200&h=200">
+            {{/if}}
+        </a>
+    </li>
+
+
+    {{/each}}
+</ul>

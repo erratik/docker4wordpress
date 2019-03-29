@@ -1,0 +1,40 @@
+<div ng-switch="display" class="ui right item">
+    <div ng-if="pre">{{pre}}</div>
+    <div ng-switch-default class="ui list" ng-class="{'flex center' : listStyle === 'inline' }">
+        <div class="item">
+            <span class="ui green circular tiny label">{{channel.counts.published}}</span>
+            Videos
+        </div>
+        <div class="item">
+            <span class="ui purple circular tiny label">{{channel.counts.pending}}</span>
+            New
+        </div>
+        <div class="item">
+            <span class="ui grey circular tiny label">{{channel.counts.unpublished}}</span>
+            Disabled
+        </div>
+    </div>
+    <div ng-switch-when="multi-select-buttons" class="ui list" ng-class="{'flex center' : listStyle === 'inline' }" >
+        <div class="item">
+            <div class="ui left labeled tiny button">
+                <a class="ui green left pointing label">
+                    {{channel.counts.published}}
+                </a>
+                <div class="ui button green tiny basic">
+                    Published Videos
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="ui left labeled tiny button">
+                <a class="ui purple left pointing label ">
+                    {{channel.counts.pending}}
+                </a>
+                <div class="ui button purple tiny basic">
+                    Pending Videos
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

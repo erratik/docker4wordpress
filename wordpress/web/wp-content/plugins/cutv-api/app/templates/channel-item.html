@@ -1,0 +1,49 @@
+<div class="two wide column">
+    <div class="ui small image channel">
+        <img ng-src="/wp-content/uploads/channels/{{channel.cutv_channel_img}}" ng-if="channel.cutv_channel_img">
+        <img ng-src="https://placeholdit.imgix.net/~text?txtsize=33&txt={{channel.playlist_name}}&w=200&h=200" ng-if="!channel.cutv_channel_img">
+    </div>
+</div>
+
+<div class="content fourteen wide column paddingless">
+
+
+    <div class="fourteen wide column grid ui flex paddingless full">
+        <div class="fourteen wide column">
+
+            <video-counts channel="channel" ng-if="channel.counts.published + channel.counts.pending" list-style="inline"></video-counts>
+
+            <hr ng-show="sources.length">
+            <div class="ui labeled tiny icon">
+                <i class="folder open icon"></i>
+                {{(sources.length) > 0 && sources.length || 'No'}} Sources
+            </div>
+            <hr>
+            <div class="field">
+                <div class="flex center">
+                    <div class="ui  icon tiny" ng-click="channel.enabled = !channel.enabled; updateChannel();">
+                        <i class="toggle icon" ng-class="{ 'on blue': channel.enabled , 'off grey': !channel.enabled }"></i>
+                        {{(channel.enabled?'Enabled':'Disabled')}}
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="flex center">
+                    <div class="ui  icon tiny" ng-click="channel.featured = !channel.featured; updateChannel();">
+                        <i class="icon" ng-class="{ 'checkmark positive': channel.featured , 'remove negative': !channel.featured }"></i>
+                        {{(channel.featured?'Featured':'Not featured')}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="two wide column paddingless">
+            <a class="ui small icon blue basic button right" href="#channel/edit/{{channel.pid}}">
+                <i class="wrench icon"></i>
+                Manage channel
+            </a>
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,45 @@
+<div class="ui modal" id="editSources_{{source.source_id}}">
+    <div class="header">Edit Source</div>
+    <div class="content">
+
+    </div>
+    <div class="actions">
+        <div class="ui positive button" ng-click="editSources(source)">Done</div>
+    </div>
+</div>
+
+<div class="ui modal" id="runSources_{{source.source_id}}">
+    <div class="header">Run Source</div>
+    <div class="content relative-wrapper">
+        <div class="ui active inverted dimmer"><div class="ui centered loader"></div></div>
+    </div>
+    <div class="actions">
+        <div class="ui positive button" ng-click="updateSource(source)">Done</div>
+    </div>
+</div>
+
+<div class="ui modal" id="deleteSources_{{source.source_id}}">
+    <div class="header">Delete Source</div>
+    <div class="content">
+        <div class="grouped fields">
+            <label for="fruit">Move videos to another source:</label>
+            <div class="field" ng-repeat="newSrc in sources" ng-if="newSrc.source_id != source.source_id">
+                <div>
+                    <input type="radio" ng-model="source.newSrc" ng-value="newSrc.source_id">
+                    <label>{{newSrc.source_name}}</label>
+                </div>
+            </div>
+            <hr>
+            <div class=" field">
+                <div>
+                    <input type="checkbox" tabindex="0" class="hidden" ng-model="source.movePlaylists">
+                    <label>Move playlists</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui negative button" ng-click="deleteSource(source)">Delete Source</div>
+        <div class="ui cancel button">Cancel</div>
+    </div>
+</div>

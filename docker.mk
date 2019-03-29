@@ -9,6 +9,11 @@ WP_ROOT ?= /var/www/html/
 up:
 	@echo "Starting up containers for for $(PROJECT_NAME)..."
 	docker-compose pull
+	docker-compose up --remove-orphans
+
+quiet:
+	@echo "Starting up containers for for $(PROJECT_NAME)..."
+	docker-compose pull
 	docker-compose up -d --remove-orphans
 
 down: stop

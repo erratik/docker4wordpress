@@ -1,0 +1,50 @@
+<a class="ui labeled icon button blue right" ng-click="openAddChannelDialog()">
+    <i class="plus circle icon"></i> Add channel
+</a>
+<h2 class="ui header">
+    <i class="settings icon"></i>
+    <div class="content">
+        CUTV Channel Management
+    </div>
+</h2>
+
+
+<div class="ui modal" id="addChannel">
+    <div class="header">Add Channel</div>
+    <div class="content">
+        <form class="ui form">
+            <div class="field">
+                <label>Channel Name</label>
+                <input type="text" ng-model="newChannel.name" placeholder="Enter a channel name">
+            </div>
+            <div class="field">
+                <div class="" ng-click="newChannel.featured=!newChannel.featured">
+                    <input type="checkbox" ng-model="newChannel.featured">
+                    <label>Channel should appear in the list above the site?</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="" ng-click="newChannel.enabled=!newChannel.enabled">
+                    <input type="checkbox" ng-model="newChannel.enabled">
+                    <label>Channel is visible?</label>
+                </div>
+            </div>
+            <button class="ui button" type="submit" ng-click="addChannel()">Submit</button>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui approve button" ng-click="deleteSource(source)">Delete Source</div>
+        <div class="ui cancel button" ng-click="closeSourceDialog(source, 'delete')">Cancel</div>
+    </div>
+</div>
+
+<div class="ui divider">
+</div>
+<div class="ui divided items">
+    <!--<pre>{{ channels | json }}</pre>-->
+    <div class="item relative-wrapper channel-item" ng-repeat="channel in channels track by $index">
+        <div class="ui active inverted dimmer" ng-if="channel.isLoading"><div class="ui centered loader"></div></div>
+        <!-- <div  ng-include="'/wp-content/plugins/cutv-api/app/templates/includes/channels-item.html'"></div> -->
+         <channel-items channel="channel" sources="sources" class="ui row stackable divided grid full relative-wrapper"></channel-items>
+    </div>
+</div>
