@@ -1,6 +1,14 @@
 <?php
 
 
+define( 'DEBUG_LEVEL', 4);
+include_once(CUTV_PLUGIN_FOLDER . '/includes/sources/cutv.sources.helpers.php');
+include_once(CUTV_PLUGIN_FOLDER . '/includes/videos/cutv.videos.helpers.php');
+// updates sources against their channels
+
+
+//!----------------------------------------- OLDER FUNCTIONS TO BE REFACTORED ----------------------------------------------------------------------
+
 	/* Render Player with Dynamic Tags and options */
 	if( ! function_exists( 'cutv_render_modified_player' ) ) {
 		function cutv_render_modified_player( $post_id = null ) {

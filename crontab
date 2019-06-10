@@ -1,0 +1,1 @@
+*/10 * * * * wget -q -O /dev/null http://wp.docker.localhost:8000/automation/17a4c83b5cce933c69c452525718b014/

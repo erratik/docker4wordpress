@@ -26,6 +26,8 @@ angular.module('cutvApiAdminApp')
             console.log(res.data)
             return res.data;
         });
+        // debugger;
+        // return [];
     };
 
     ChannelService.getSources = () => {
@@ -49,8 +51,13 @@ angular.module('cutvApiAdminApp')
         });
     };
 
-    ChannelService.getSourceVideos = function(sourceId) {
-        return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_source_video_posts&source_id=${sourceId}&json=true`).then(function(res) {
+    ChannelService.getSourceVideos = function(sources) {
+        return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_sources_videos&sources=${sources.join(',')}&json=true`).then(function(res) {
+            return res.data;
+        });
+    };
+    ChannelService.updateVideos = function(videos) {
+        return $http.get(`/wp-admin/admin-ajax.php?action=cutv_update_videos&video_ids=${videos.join(',')}&json=true`).then(function(res) {
             return res.data;
         });
     };
@@ -64,7 +71,6 @@ angular.module('cutvApiAdminApp')
     ChannelService.handlePluginAction = (data) => {
         data.json = true;
 
-        debugger;
         return $http.get(ajaxurl, {
             params: data
         }).then(res => res.data);
@@ -72,7 +78,7 @@ angular.module('cutvApiAdminApp')
 
     ChannelService.updateChannel = function($scope, update = true) {
 
-
+        debugger;
         var query = {
             action: 'cutv_update_channel',
             channel: $scope.channel.pid,

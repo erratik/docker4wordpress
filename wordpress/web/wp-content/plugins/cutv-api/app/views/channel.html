@@ -17,154 +17,31 @@
 <div class="ui divider"></div>
 <div class="ui tabular menu">
     <a class="item" ng-click="activeTab = 'videos'" ng-class="{'active': activeTab === 'videos' }">
-    Videos
-  </a>
+        Videos
+    </a>
     <a class="item" ng-click="activeTab = 'sources'" ng-class="{'active': activeTab === 'sources' }">
-    Sources
-  </a>
+        Sources
+    </a>
     <a class="item" ng-click="activeTab = 'display'" ng-class="{'active': activeTab === 'display' }">
-    Display
-  </a>
+        Display
+    </a>
 </div>
-<div ng-switch="activeTab" ng-if="sources && channel">
+<div ng-switch="activeTab">
 
-    <div class="active loader inline ui" ng-switch-default>
+    <!-- <div class="active loader inline ui" ng-switch-default>
 
+    </div> -->
+    <div id="videos">
+        <manage-videos channel="channel" sources="sources.selected" ng-switch-when="videos">
+        </manage-videos>
     </div>
-    <div id="sources">
-        <manage-sources channel="channel" sources="sources" ng-switch-when="sources"></manage-sources>
+    <div id="sources" ng-switch-default>
+        <manage-sources sources="sources" ng-if="sources"></manage-sources>
     </div>
 
     <div id="display" ng-controller="ChannelDisplayCtrl" ng-switch-when="display">
         <div ng-include="'/wp-content/plugins/cutv-api/app/templates/includes/channel--display.html'"></div>
     </div>
 
-    <div id="videos" ng-controller="ChannelVideosCtrl" ng-switch-when="videos">
-        <div class="ui menu channel relative-wrapper">
-            <div class="active loader ui" ng-if="working"></div>
-            <div class="item">
-                <div class="ui icon input">
-                    <input type="text" placeholder="Search...">
-                    <i class="search icon"></i>
-                </div>
-            </div>
-            <div class="item" ng-show="selectedVideos.length">
-                <select ng-model="selectedAction" ng-options="option.name for option in options">
-                </select>
-            </div>
-            <div class="item" ng-if="selectedVideos.length">
-                <button class="teal ui button" ng-click="updateChannelVideos()">{{selectedAction.name }} <a class="ui red circular tiny label">{{ selectedVideos.length }}</a></button>
-            </div>
-            <!-- <video-counts channel="channel" list-style="inline"></video-counts> -->
-        </div>
 
-        <div class="ui divided items">
-
-            <div class="ui grid item" ng-repeat="source in sources | orderBy:'source_id':false">
-
-                <div class="eight wide column">
-                    <h3>
-                        {{source.source_name}}
-                    </h3>
-
-                </div>
-                <div class="eight wide column">
-                    <button class="ui yellow basic button right icon" ng-click="manageSourceVideos(source)">
-                        <i class="film icon"></i>
-                            Videos
-                    </button>
-                    <a class="ui blue basic button right icon" href="/wp-admin/post.php?post={{source.source_id}}&action=edit" target="_blank">
-                    <!-- <a class="ui blue basic button right icon" ng-click="openSourceDialog(source, 'edit')"> -->
-                        <i class="youtube play icon"></i> Edit
-                    </a>
-                    <!-- <a class="ui purple basic button right icon" href="/wp-admin/admin.php?page=wpvr&run_sources&ids={{source.source_id}}" target="_blank"> -->
-                        <a class="ui violet basic button right icon" ng-click="openSourceDialog(source, 'run')">
-                            <i class="refresh icon"></i> Run
-                        </a>
-                    <a class="ui red basic button right icon" ng-click="openSourceDialog(source, 'delete')">
-                        <i class="trash icon"></i> Delete
-                    </a>
-                </div>
-
-                <div class="source-header">
-
-
-                    <div class="ui list flex center">
-                        <div class="item">
-                            <div class="ui left labeled tiny button" ng-click="setSourceFilter(source, {status: 'published'}); publishSelected = !publishSelected;">
-                                <a class="ui green left pointing label" ng-class="{'basic': publishSelected }">
-                                        {{source.source_video_counts.published.length}}
-                                    </a>
-                                <div class="ui button green tiny" ng-class="{'basic': !publishSelected}">
-                                    Published Videos
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="ui left labeled tiny button" ng-click="setSourceFilter(source, {status: 'pending'}); pendingSelected = !pendingSelected;">
-                                <a class="ui purple left pointing label" ng-class="{'basic': pendingSelected }">
-                                        {{source.source_video_counts.pending.length}}
-                                    </a>
-                                <div class="ui button purple tiny" ng-class="{'basic': !pendingSelected}">
-                                    Pending Videos
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="ui left labeled tiny button" ng-click="setSourceFilter(source, {status: 'unpublished'}); unpublishSelected = !unpublishSelected;">
-                                <a class="ui grey left pointing label" ng-class="{'basic': unpublishSelected }">
-                                        {{source.source_video_counts.unpublished.length}}
-                                    </a>
-                                <div class="ui button grey tiny" ng-class="{'basic': !unpublishSelected}">
-                                    Unpublished Videos
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modals" ng-include="'/wp-content/plugins/cutv-api/app/templates/source-modals.html'"></div>
-
-                </div>
-
-                <div class="content videos" ng-show="source.managingVideos">
-
-
-                     <!-- <div>
-                                    <div class="ui icon input">
-                    <input type="text" ng-model="source.query" placeholder="Filter unassigned sources">
-                                        <i class="search icon"></i>
-                                    </div>
-                                    {{source.query}}
-                                </div> -->
-                    <div class="ui link cards">
-                        <div class="card" ng-repeat="video in source.video_posts | orderBy:'video.post_date'" ng-click="toggleVideoSelected(video)" ng-class="{'selected': video.selected}">
-
-                            <div class="image">
-                                <img ng-src="{{video.youtube_thumbnail}}">
-                            </div>
-                            <div class="content">
-                                <div class="header">{{video.post_title}}</div>
-                                <div class="meta">
-                                    <i class="right floated star icon" ng-click="$event.stopPropagation(); setFeatureVideo(channel.pid)"></i>
-                                <!-- <div>
-                                    <i class="ui icon  clock"></i>
-                                    {{video.video_duration}}
-                                </div> -->
-                                <div>
-                                    <i class="ui icon calendar"></i>
-                                    {{video.post_date}}
-                                </div>
-                            </div>
-
-                                <div class="ui label {{video.snaptube_status}}" ng-class="{'green': video.snaptube_status === 'published', 'grey' : video.snaptube_status === 'unpublished', 'purple' : video.snaptube_status === 'pending'}">
-                                    <i class="fa wpvr_video_status_icon fa-check-square "></i>{{video.snaptube_status}}
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
+</div>

@@ -2,28 +2,29 @@
 
 define('DEBUG_LEVEL', 2);
 
-function get_source_meta($source_id, $meta_key, $return_meta = true) {
-    global $wpdb;
-    $query_string = "SELECT * FROM " . WPVR_SOURCE_META ." WHERE source_id = $source_id AND meta_key='$meta_key'";
-    
-    cutv_log(DEBUG_LEVEL-1, '[get_source_meta] '. $query_string);
-    
-    return $wpdb->get_row( $query_string );
-}
-
-
+// get the source_id field from sources that match key/value
 function get_source_meta_ids( $meta_key, $meta_value) {
     global $wpdb;
+    
     $query_string = "SELECT source_id FROM " . WPVR_SOURCE_META . " WHERE meta_key = '$meta_key' AND meta_value = '$meta_value'";
     $rows = $wpdb->get_results($query_string);
     
-    cutv_log(DEBUG_LEVEL-1, '[get_source_meta_ids] '. $query_string);
+    cutv_log(DEBUG_LEVEL, '[get_source_meta_ids] '. $query_string);
     
     foreach ($rows as $meta_row) {
         $source_ids[] = $meta_row->source_id;
     }
     
     return $source_ids;
+}
+
+function get_source_meta($source_id, $meta_key, $meta_value = null, $return_meta = true)  {
+    global $wpdb;
+    
+    $query_string = "SELECT * FROM " . WPVR_SOURCE_META . " WHERE source_id = $source_id AND meta_key = '$meta_key'";
+    cutv_log(DEBUG_LEVEL, '[get_source_meta_ids] '. $query_string);
+
+    return $wpdb->get_row($query_string);
 }
 
 function add_source_meta($source_id, $meta_key, $meta_value = null, $return_meta = true) {
@@ -138,4 +139,5 @@ function cutv_get_sources($channel_id = null) {
     }
 
     return get_posts( $args );
+    
 }

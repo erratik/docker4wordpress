@@ -9,73 +9,76 @@
  * # manageChannel
  */
 angular.module('cutvApiAdminApp')
-    .directive('manageSources', (ChannelService) => {
+    .directive('manageSources', (ChannelService, $routeParams, $document) => {
         return {
             restrict: 'E',
             // replace: true,
             scope: {
-                channel: '=',
+                // channel: '=',
                 sources: '='
             },
             templateUrl: '/wp-content/plugins/cutv-api/app/templates/manage-sources.html',
+
             link: function(scope, element, attrs) {
+
+                const formElement = $document.find('form')[0];
+                scope.formClass = formElement.classList.value;
 
                 scope.query = '';
                 scope.updateSuccess = false;
+                scope.channel = cutv.channels.find(c => c.pid == $routeParams.channelId);
 
-                const selectedSources = new Set(scope.sources.selected);
-                const availableSources = new Set(scope.sources.available);
+                scope.selectedSources = new Set(scope.sources.selected);
+                scope.availableSources = new Set(scope.sources.available);
 
-                const sourcesToArrays = (() => {
+                scope.sourcesToArrays = (() => {
                     scope.sources = {
-                        selected: Array.from(selectedSources),
-                        available: Array.from(availableSources)
+                        selected: Array.from(scope.selectedSources),
+                        available: Array.from(scope.availableSources)
                     }
                 });
 
+
                 scope.selectSource = (source) => {
                     if (source.selected) {
-                        selectedSources.add(source);
-                        availableSources.delete(source);
+                        scope.selectedSources.add(source);
+                        scope.availableSources.delete(source);
                     } else {
-                        availableSources.add(source);
-                        selectedSources.delete(source);
+                        scope.availableSources.add(source);
+                        scope.selectedSources.delete(source);
                     }
-                    sourcesToArrays();
+                    scope.sourcesToArrays();
                 };
 
                 scope.updateChannelSources = () => {
 
-                    var data = {
+                    if (!scope.channel) {
+
+                        return;
+                    }
+
+                    const data = {
                         action: 'cutv_update_channel_sources',
-                        sources: scope.sources.selected.map(({
-                            source_id
-                        }) => source_id).join(','),
+                        sources: scope.sources.selected.map(s => s.source_id).join(','),
                         channel: scope.channel.pid,
                         move_videos: true
                     };
 
-                    ChannelService.handlePluginAction(data).then(res => {
+                    // debugger;
+                    ChannelService.handlePluginAction(data).then(channelSourceIds => {
+
+                        channelSourceIds = channelSourceIds.map(x => Number(x));
+                        scope.sources.selected = scope.sources.selected.filter(source => channelSourceIds.includes(source.source_id));
+                        scope.sources.available = scope.sources.available.filter(source => !channelSourceIds.includes(source.source_id));
+
+                        scope.$emit('sourcesUpdated', [scope.sources]);
                         scope.updateSuccess = true;
-                        // todo: validate the results
-                        // return res.map(r => Number(r));
                     });
 
                 };
 
-
-
-                function makeSourceObj(updatingSources) {
-
-                    var channel_id = scope.channel.pid;
-                    scope.channel['sources'] = scope.sources.filter((src) => {
-                        return src.selected
-                    });
-                    debugger;
-                }
-
-
             }
+
         };
     })
     .filter('orderObjectBy', function() {

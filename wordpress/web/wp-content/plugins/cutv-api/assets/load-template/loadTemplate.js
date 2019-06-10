@@ -1,6 +1,6 @@
-var LoadTemplate = function(element, template, data){
+var LoadTemplate = function(element, template, data) {
     // Check if parenet element is defined as string or object.
-    if(typeof element == 'string'){
+    if (typeof element == 'string') {
         this.el = document.getElementById(element);
     } else {
         this.el = element;
@@ -14,7 +14,7 @@ var LoadTemplate = function(element, template, data){
     this.folderPath = 'assets/templates/';
 };
 
-LoadTemplate.prototype.create = function(callback){
+LoadTemplate.prototype.create = function(callback) {
     var req = new XMLHttpRequest();
     var that = this;
 
@@ -22,8 +22,8 @@ LoadTemplate.prototype.create = function(callback){
     req.open('get', this.folderPath + this.tempName + '.handlebars', true);
 
     // Wait for request to complete.
-    req.onreadystatechange = function(){
-        if (req.readyState == 4 && req.status == 200){
+    req.onreadystatechange = function() {
+        if (req.readyState == 4 && req.status == 200) {
             //Compile HB template, add data (if defined) and place in parent element.
             var compiled = Handlebars.compile(req.response);
             that.el.innerHTML = compiled(that.data);
@@ -37,7 +37,7 @@ LoadTemplate.prototype.create = function(callback){
     req.send();
 };
 
-LoadTemplate.prototype.createAndWait = function(callback){
+LoadTemplate.prototype.createAndWait = function(callback) {
     var req = new XMLHttpRequest();
     var that = this;
 
@@ -45,8 +45,8 @@ LoadTemplate.prototype.createAndWait = function(callback){
     req.open('get', this.folderPath + this.tempName + '.handlebars', true);
 
     // Wait for request to complete.
-    req.onreadystatechange = function(){
-        if (req.readyState == 4 && req.status == 200){
+    req.onreadystatechange = function() {
+        if (req.readyState == 4 && req.status == 200) {
             //Compile HB template, but wait..
             var compiled = Handlebars.compile(req.response);
 

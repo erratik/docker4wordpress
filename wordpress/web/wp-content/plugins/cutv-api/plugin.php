@@ -10,9 +10,9 @@ Author URI: http://erratik.ca
 
 global $wpdb;
 
-
 define('CUTV_DEBUG_LEVEL', 3);
 function cutv_log($log_level, $log, $message = false) {
+    
     if ($log_level >= CUTV_DEBUG_LEVEL) {
         if (gettype($log) == 'object' || gettype($log) == 'array') {
             print_r($log);
