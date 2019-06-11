@@ -11,7 +11,7 @@ var LoadTemplate = function(element, template, data) {
     this.data = data || null;
 
     // You can change this to path of your template folder.
-    this.folderPath = 'assets/templates/';
+    this.folderPath = '/wp-content/plugins/cutv-api/views/';
 };
 
 LoadTemplate.prototype.create = function(callback) {
@@ -19,7 +19,7 @@ LoadTemplate.prototype.create = function(callback) {
     var that = this;
 
     // Define parameters for request.
-    req.open('get', this.folderPath + this.tempName + '.handlebars', true);
+    req.open('get', this.folderPath + this.tempName + '.hbs', true);
 
     // Wait for request to complete.
     req.onreadystatechange = function() {

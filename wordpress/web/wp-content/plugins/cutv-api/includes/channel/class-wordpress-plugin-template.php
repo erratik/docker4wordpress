@@ -243,13 +243,17 @@ class CUTV_Channel {
         // wp_enqueue_script('cutv-api');
 
 
-        wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery'), $this->_version );
-        wp_enqueue_script( $this->_token . '-admin' );
-
         wp_register_script( $this->_token . '-handlebars', esc_url($this->vendor_dir) . '/handlebars/handlebars.min' . $this->script_suffix . '.js', $this->_version );
         wp_enqueue_script( $this->_token . '-handlebars' );
 
-        wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend.js', array( 'jquery', 'underscore' , $this->_token . '-handlebars'), $this->_version );
+        wp_register_script($this->_token . '-loadtpl', esc_url($this->assets_url) . 'load-template/loadTemplate' . $this->script_suffix . '.js', array($this->_token . '-handlebars'), $this->_version);
+        wp_enqueue_script($this->_token . '-loadtpl');
+
+        
+        wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery'), $this->_version );
+        wp_enqueue_script( $this->_token . '-admin' );
+
+        wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend.js', array(  $this->_token . '-handlebars', $this->_token . '-admin'), $this->_version );
         wp_enqueue_script( $this->_token . '-frontend' );
 //        exit;
 //
@@ -308,10 +312,7 @@ class CUTV_Channel {
                 wp_enqueue_script($this->_token . '-ctrl-main');
                 wp_register_script($this->_token . '-ctrl-channel', esc_url($this->app_scripts_dir) . 'controllers/channel.ctrl' . $this->script_suffix . '.js', $this->_version);
                 wp_enqueue_script($this->_token . '-ctrl-channel');
-                wp_register_script($this->_token . '-ctrl-videos', esc_url($this->app_scripts_dir) . 'controllers/channel-videos.ctrl' . $this->script_suffix . '.js', $this->_version);
-                wp_enqueue_script($this->_token . '-ctrl-videos');
-                wp_register_script($this->_token . '-ctrl-sources', esc_url($this->app_scripts_dir) . 'controllers/channel-sources.ctrl' . $this->script_suffix . '.js', $this->_version);
-                wp_enqueue_script($this->_token . '-ctrl-sources');
+        
                 wp_register_script($this->_token . '-ctrl-display-channel', esc_url($this->app_scripts_dir) . 'controllers/channel-display.ctrl' . $this->script_suffix . '.js', $this->_version);
                 wp_enqueue_script($this->_token . '-ctrl-display-channel');
                 wp_register_script($this->_token . '-dir-mng-channel', esc_url($this->app_scripts_dir) . 'directives/channel-item.directive' . $this->script_suffix . '.js', $this->_version);
@@ -325,8 +326,10 @@ class CUTV_Channel {
                 wp_register_script($this->_token . '-dir-upload-wrapper', esc_url($this->app_scripts_dir) . 'directives/channel-image-uploader.directive' . $this->script_suffix . '.js', $this->_version);
                 wp_enqueue_script($this->_token . '-dir-upload-wrapper');
 
-                wp_register_script($this->_token . '-admin', esc_url($this->assets_url) . 'js/admin' . $this->script_suffix . '.js', array('jquery', $this->_token . '-lodash', $this->_token . '-app'), $this->_version);
+
+                wp_register_script($this->_token . '-admin', esc_url($this->assets_url) . 'js/admin' . $this->script_suffix . '.js', array('jquery', $this->_token . '-app'), $this->_version);
                 wp_enqueue_script($this->_token . '-admin');
+
 
 
             }  else {

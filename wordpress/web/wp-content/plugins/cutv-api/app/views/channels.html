@@ -43,8 +43,11 @@
 <div class="ui divided items">
     <!--<pre>{{ channels | json }}</pre>-->
     <div class="item relative-wrapper channel-item" ng-repeat="channel in channels track by $index">
-        <div class="ui active inverted dimmer" ng-if="channel.isLoading"><div class="ui centered loader"></div></div>
+        <div class="ui active inverted dimmer" ng-if="channel.isLoading">
+            <div class="ui centered loader"></div>
+        </div>
         <!-- <div  ng-include="'/wp-content/plugins/cutv-api/app/templates/includes/channels-item.html'"></div> -->
-         <channel-items channel="channel" sources="sources" class="ui row stackable divided grid full relative-wrapper"></channel-items>
+        <channel-items channel="channel" sources="sources" class="ui row stackable divided grid full relative-wrapper">
+        </channel-items>
     </div>
 </div>

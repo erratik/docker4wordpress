@@ -135,10 +135,20 @@ add_action('wp_ajax_cutv_get_channel', 'cutv_get_channel');
 
 function cutv_get_channels() {
     global $wpdb;
+    $channel_id = isset($_REQUEST) && $_REQUEST['channel_id'] && $_REQUEST['channel_id'] ? $_REQUEST['channel_id'] : 0;
+    if ($channel_id) {
+        $countVideos = $_REQUEST['count'] ? true : false;
+        // exit;
+            echo "--$countVideos---", "\n";
+        if ($countVideos) {
+            $source_result = cutv_get_sources_by_channel($channel_id, false);
+            print_r($source_result);
 
-    
-    if (isset($_REQUEST) && isset($_REQUEST['channel_id'])) {
-        $channel_id  = $_REQUEST['channel_id'];
+            cutv_log(4, $source_result);
+        }
+        echo '--hjhkhjk---', "\n";
+        // print_r(json_encode(cutv_get_channel($channel_id)));
+        exit;
         echo json_encode(cutv_get_channel($channel_id));
     } else {
         $channels = [];
@@ -147,14 +157,14 @@ function cutv_get_channels() {
             $channels[] = cutv_get_channel($channel->pid);
         };
 
-        if (isset($_REQUEST)) {
+        if (isset($_REQUEST) && isset($_REQUEST['json'])) {
             return json_encode($channels);
-            die();
         } else {
-            return $channels;
+            return json_encode($channels);
         }
     }
 
+    die();
 
 }
 add_action('wp_ajax_nopriv_cutv_get_channels', 'cutv_get_channels');

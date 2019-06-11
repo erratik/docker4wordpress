@@ -167,7 +167,7 @@ function cutv_convert_snaptube() {
     die();
 }
 add_action('wp_ajax_cutv_convert_snaptube', 'cutv_convert_snaptube');
-// add_action('wp_ajax_nopriv_cutv_convert_snaptube', 'cutv_convert_snaptube');
+add_action('wp_ajax_nopriv_cutv_convert_snaptube', 'cutv_convert_snaptube');
 
 
 function cutv_trash_snaptube_video() {

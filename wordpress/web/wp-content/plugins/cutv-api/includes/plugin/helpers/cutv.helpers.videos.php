@@ -57,6 +57,60 @@ function cutv_get_snaptube_videos($ids, $single = false) {
         return $wpdb->get_results( "SELECT * FROM " . SNAPTUBE_VIDEOS ." WHERE slug IN ($ids)");
     }
 }
+function cutv_video_meta_by_source($source_id) {
+
+    global $wpdb;
+    
+    $videos = $wpdb->get_results( "SELECT video_id FROM " . WPVR_VIDEO_META ." WHERE meta_key = 'wpvr_video_sourceId' AND meta_value = '$source_id'");
+    
+    $source_videos_meta = [];
+    foreach ($videos as $video) {
+        array_push($source_videos_meta, cutv_wpvr_video_meta($video->video_id));
+    }
+    
+    return $source_videos_meta;
+}
+
+function cutv_wpvr_video_by_ids($videos) {
+    global $wpdb;
+
+    $wpvr_posts = [];
+    foreach ($videos as $video) {
+        
+        $wpvr_post = get_post($video->video_id);
+        
+        if ($wpvr_post !== null) {
+            array_push( $wpvr_posts, $wpvr_post);
+        } else {
+            $wpdb->delete( WPVR_VIDEO_META, array( 'video_id' => $video->video_id ) );
+        }
+
+    }
+    // cutv_log(4, $wpvr_posts);
+    
+    return $wpvr_posts;
+
+}
+
+function cutv_sort_source_videos_by_status($source_id, $wpvr_posts, $count_only = true) {
+    echo '-----';
+    cutv_log(4, $wpvr_posts);
+    // exit;
+    $videos = [];
+    $videos['draft'] = [];
+    $videos['publish'] = [];
+    $videos['pending'] = [];
+    
+    foreach ($wpvr_posts as $key => $wpvr_post) {
+        array_push($videos[$wpvr_post->post_status], $wpvr_post);
+    }
+    echo '-----';
+
+    cutv_log(4, $videos);
+    // exit;
+    return $videos;
+
+}
 
 // function cutv_get_video($video_id) {
 

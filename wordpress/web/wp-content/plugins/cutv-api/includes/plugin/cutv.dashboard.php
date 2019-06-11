@@ -7,6 +7,7 @@
     // wp_localize_script('cutv-api', 'wpApiSettings', array('root' => esc_url_raw(rest_url()), 'nonce' => wp_create_nonce('wp_rest')));
     // wp_enqueue_script('cutv-api');
     $cutv_channels = cutv_get_channels();
+    // print_r( $cutv_channels);
     // $all_sources = cutv_get_sources_info(true);
 
 
@@ -15,7 +16,6 @@
     var cutv = {
         channels: <?php echo json_encode($cutv_channels); ?>
     };
-    // var sources = <?php echo json_encode($all_sources); ?>
 </script>
 
 <div>

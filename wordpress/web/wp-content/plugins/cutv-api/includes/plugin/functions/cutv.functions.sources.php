@@ -125,8 +125,8 @@ function cutv_get_source_videos($source) {
 
     $video_ids = get_video_meta_ids('wpvr_video_sourceId', $source);
 
-    // cutv_log(DEBUG_LEVEL, '[cutv_get_source_videos] '. "[$source] CHANNEL VIDEO IDS: "); 
-    // cutv_log(DEBUG_LEVEL+1, $video_ids); 
+    cutv_log(DEBUG_LEVEL, '[cutv_get_source_videos] '. "[$source] CHANNEL VIDEO IDS: "); 
+    cutv_log(DEBUG_LEVEL+1, $video_ids); 
 
     $videos = array();
     if (count($video_ids)) {
@@ -149,9 +149,10 @@ function cutv_get_source_videos($source) {
 }
 
 
-function cutv_get_sources_by_channel($channel_id) {
-    $abridged = true;
-    
+function cutv_get_sources_by_channel($channel_id, $abridged = true) {
+
+    global $wpdb;
+
     if (isset($_REQUEST)) {
         $channel_id = $_REQUEST['channel_id'];
         $abridged = false;
@@ -161,7 +162,7 @@ function cutv_get_sources_by_channel($channel_id) {
     
 
     if ($channel_source_ids == null) {
-        
+        echo "no channels source is";
         echo json_encode([]);
         die();
     }
@@ -183,6 +184,12 @@ function cutv_get_sources_by_channel($channel_id) {
                 ));
                     
             $posts =  cutv_get_snaptube_posts($args);
+            
+            cutv_log(5,  $posts) ;
+            $_videos = $wpdb->get_results( "SELECT video_id FROM " . WPVR_VIDEO_META ." WHERE meta_key = 'wpvr_video_sourceId' AND meta_value = '$source_id'");
+            $_wpvr_posts = cutv_wpvr_video_by_ids($_videos);
+            $sorted = cutv_sort_source_videos_by_status($_wpvr_posts);
+
             
             $source_videos = new stdClass;
             $source_videos->unpublished = [];
@@ -206,15 +213,17 @@ function cutv_get_sources_by_channel($channel_id) {
             }
             
             
-            
             $sources[] = (object) [
                 'source_id' => $source_id,
                 'source_video_counts' => $source_videos,
                 'source_name' => get_post_meta( $source_id, 'wpvr_source_name', true )
             ];
         }
-        
-        echo json_encode($sources);
+        if (isset($_REQUEST)) {
+            cutv_log(4, $sources);
+            echo json_encode($sources);
+            echo 'xxxx';
+        }
         
     } else {
         
@@ -225,31 +234,11 @@ function cutv_get_sources_by_channel($channel_id) {
     die();
     
 }
+add_action('wp_ajax_nopriv_cutv_get_sources_by_channel', 'cutv_get_sources_by_channel');
 add_action('wp_ajax_cutv_get_sources_by_channel', 'cutv_get_sources_by_channel');
         
 
 //!----------------------------------------- OLDER FUNCTIONS TO BE REFACTORED ----------------------------------------------------------------------
-
-
-function cutv_get_sources_videos($sources) {
-
-    global $wpdb;
-    if (isset($_REQUEST)) {
-        $source_ids = explode(',', $_REQUEST['sources']);
-        
-        $videos = array();
-        foreach($source_ids as $source_id) {
-            $videos[$source_id] = cutv_get_source_videos($source_id);
-        }
-
-        // cutv_log(DEBUG_LEVEL, '[cutv_get_source_videos] '. "[$source] CHANNEL VIDEO IDS: "); 
-        // cutv_log(DEBUG_LEVEL, $videos); 
-        echo json_encode($videos);
-        die();
-    }   
-}
-add_action('wp_ajax_cutv_get_sources_videos', 'cutv_get_sources_videos');
-
 
 
 function cutv_get_source_video_posts($source_id) {

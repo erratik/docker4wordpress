@@ -21,15 +21,6 @@ angular.module('cutvApiAdminApp')
         });
     };
 
-    ChannelService.getChannelSources = function(channelId) {
-        return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_sources_by_channel&channel_id=${channelId}&json=true`).then(function(res) {
-            console.log(res.data)
-            return res.data;
-        });
-        // debugger;
-        // return [];
-    };
-
     ChannelService.getSources = () => {
         return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_sources_info&json=true`).then(function(res) {
             return res.data;
