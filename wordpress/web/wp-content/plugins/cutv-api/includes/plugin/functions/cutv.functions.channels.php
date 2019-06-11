@@ -107,7 +107,6 @@ function cutv_update_channel() {
             );
         }
 
-
         $channel = cutv_get_channel($channel_id);
 
         header('Content-Type: application/json');
@@ -122,45 +121,45 @@ add_action('wp_ajax_cutv_update_channel', 'cutv_update_channel');
 
 
 function cutv_get_channel($channel_id) {
-
     global $wpdb;
-    $channel = $wpdb->get_row("SELECT * FROM " . SNAPTUBE_PLAYLISTS ." WHERE pid = $channel_id" );
-    $channel->cutv_channel_img = get_term_meta( $channel_id, 'cutv_channel_img', true );
-    $channel->enabled = filter_var(get_term_meta( $channel_id, 'cutv_channel_enabled', true ), FILTER_VALIDATE_BOOLEAN);
-    $channel->featured = filter_var(get_term_meta( $channel_id, 'cutv_channel_featured', true ), FILTER_VALIDATE_BOOLEAN);
-
+    $channel = $wpdb->get_row("SELECT pid, playlist_name, playlist_slugname FROM " . SNAPTUBE_PLAYLISTS ." WHERE pid = $channel_id", ARRAY_A );
+    $channel['cutv_channel_img'] = get_term_meta( $channel_id, 'cutv_channel_img', true );
+    $channel['enabled'] = filter_var(get_term_meta( $channel_id, 'cutv_channel_enabled', true ), FILTER_VALIDATE_BOOLEAN);
+    $channel['featured'] = filter_var(get_term_meta( $channel_id, 'cutv_channel_featured', true ), FILTER_VALIDATE_BOOLEAN);
     return $channel;
 }
+add_action('wp_ajax_nopriv_cutv_get_channel', 'cutv_get_channel');
 add_action('wp_ajax_cutv_get_channel', 'cutv_get_channel');
 
 function cutv_get_channels() {
     global $wpdb;
-    $channel_id = isset($_REQUEST) && $_REQUEST['channel_id'] && $_REQUEST['channel_id'] ? $_REQUEST['channel_id'] : 0;
+
+    $channel_id = isset($_REQUEST) && $_REQUEST['channel_id'] ? $_REQUEST['channel_id'] : 0;
+    $exclude_sources =  $_REQUEST['exclude_sources'] ? $_REQUEST['exclude_sources'] : 0;
+
     if ($channel_id) {
         $countVideos = $_REQUEST['count'] ? true : false;
-        // exit;
-            echo "--$countVideos---", "\n";
-        if ($countVideos) {
-            $source_result = cutv_get_sources_by_channel($channel_id, false);
-            print_r($source_result);
+        
+        echo $exclude_sources ? json_encode(cutv_get_channel($channel_id)) : json_encode(array(
+            'channel' => cutv_get_channel($channel_id),
+            'sources' => cutv_get_sources_by_channel($channel_id, $countVideos, false),
+        ));
 
-            cutv_log(4, $source_result);
-        }
-        echo '--hjhkhjk---', "\n";
-        // print_r(json_encode(cutv_get_channel($channel_id)));
-        exit;
-        echo json_encode(cutv_get_channel($channel_id));
     } else {
+
         $channels = [];
         $channels_rows = $wpdb->get_results("SELECT * FROM " . SNAPTUBE_PLAYLISTS ." WHERE pid > 1" );
         foreach ($channels_rows as $channel) {
-            $channels[] = cutv_get_channel($channel->pid);
+            $channels[] = $exclude_sources ? cutv_get_channel($channel->pid) : array(
+                'channel' => cutv_get_channel($channel->pid),
+                'sources' => cutv_get_sources_by_channel($channel->pid, $countVideos, false),
+            );
         };
 
         if (isset($_REQUEST) && isset($_REQUEST['json'])) {
-            return json_encode($channels);
+            echo json_encode($channels);
         } else {
-            return json_encode($channels);
+            return $channels;
         }
     }
 
@@ -205,6 +204,7 @@ function cutv_delete_channel()
 }
 add_action('wp_ajax_cutv_delete_channel', 'cutv_delete_channel');
 
+//! MOVE THIS!
 function get_the_catalog_cat( $id = false ) {
     $categories = get_the_terms( $id, 'catablog-terms' );
     if ( ! $categories || is_wp_error( $categories ) )

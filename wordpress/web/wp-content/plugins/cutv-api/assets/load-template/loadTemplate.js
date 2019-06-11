@@ -29,7 +29,7 @@ LoadTemplate.prototype.create = function(callback) {
             that.el.innerHTML = compiled(that.data);
 
             // Execute callback function
-            callback();
+            if (!!callback) callback();
         }
     };
 

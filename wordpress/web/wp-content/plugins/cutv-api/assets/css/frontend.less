@@ -70,13 +70,32 @@
 .channel-links-list {
   width: 100%;
   display: flex;
+  flex-direction: column;
 }
 
-.sidebar_menu ul.primary-menu li.menu-item .channel-links-list a {
-  font-size: 13px;
-  padding: 6px 40px 6px 0;
-  opacity: 0.6;
+.sidebar_menu ul.primary-menu>li.menu-item {
+
+  >a {
+    padding: 5px 40px 5px 0 !important;
+  }
+
+  &:before {
+    height: 25px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: inherit;
+    margin-top: 3px;
+  }
+
+  .channel-links-list a {
+    font-size: 12px;
+    padding: 0px 40px 0 0;
+    opacity: .8;
+  }
 }
+
 
 .main-inner {
 
@@ -129,7 +148,7 @@ body.shadows {
   .video-block-container.video-home li .vid_info span,
   .more-author-videos .vid_info .videoHname,
   .suggested-video-container .vid_info .videoHname {
-    font-size: 14px;
+    font-size: 13px;
     text-transform: uppercase;
     font-weight: bold;
     color: #eee;
@@ -139,24 +158,18 @@ body.shadows {
     z-index: 99;
   }
 
-  .wrapper .main .page-wrapper {
-    //margin-top: 205px !important;
+  .jcarousel {
+    max-height: inherit;
   }
 
-  .top-header .logo a img {}
+  .video_c_player.jcarousel.vid_list ul li {
+    height: inherit !important;
+  }
+
 }
 
 body.page-template-snaptube-template {
 
-
-  .right_side .ui-tabs-panel embed {
-    //max-width: inherit;
-    //height: 486px !important
-  }
-
-  .wrapper .video-block {
-    //width: 20% !important;
-  }
 
   .full-bg.bg-style-1 {
     background-color: #333;
@@ -170,25 +183,25 @@ body.page-template-snaptube-template {
     }
   }
 
-  .video-carousel-title,
-  .video-module-title,
-  .video-block-container-wrapper .more_title {
-    background: #555;
-    width: 100%;
-    padding: 0 1000px 0 1000px !important;
-    margin-left: -1000px !important;
-    position: relative;
-    box-sizing: content-box;
-    margin-right: inherit !important;
-    display: flex;
-    color: #eee !important;
-    font-weight: bold;
-    font-size: 18px;
+  // .video-carousel-title,
+  // .video-module-title,
+  // .video-block-container-wrapper .more_title {
+  //   background: #555;
+  //   width: 100%;
+  //   padding: 0 1000px 0 1000px !important;
+  //   margin-left: -1000px !important;
+  //   position: relative;
+  //   box-sizing: content-box;
+  //   margin-right: inherit !important;
+  //   display: flex;
+  //   color: #eee !important;
+  //   font-weight: bold;
+  //   font-size: 18px;
 
-    >div {
-      display: flex;
-    }
-  }
+  //   >div {
+  //     display: flex;
+  //   }
+  // }
 
   #gallery_banner_list ul li .nav_container {
     .slide_video_info {
@@ -385,26 +398,26 @@ body.page-template-catalog {
   }
 }
 
-.video_c_player.jcarousel .carousel_row {
-  display: flex;
-  justify-content: space-between;
+// .video_c_player.jcarousel .carousel_row {
+//   display: flex;
+//   justify-content: space-between;
 
-  >li {
-    margin-right: 2.2rem !important;
-    padding: 0 !important;
-  }
+//   >li {
+//     margin-right: 2.2rem !important;
+//     padding: 0 !important;
+//   }
 
-  .video_container {
-    display: flex;
-    flex-direction: column;
-  }
-}
+//   .video_container {
+//     display: flex;
+//     flex-direction: column;
+//   }
+// }
 
-.page-wrapper .main-inner {
+// .page-wrapper .main-inner {
 
-  .video_c_player.vid_list ul.video_module li .video_container .imgSidethumb,
-  .video_c_player.vid_list ul.video_module li .video_container .vid_info {
-    width: 100% !important;
-    padding-left: inherit;
-  }
-}
+//   .video_c_player.vid_list ul.video_module li .video_container .imgSidethumb,
+//   .video_c_player.vid_list ul.video_module li .video_container .vid_info {
+//     width: 100% !important;
+//     padding-left: inherit;
+//   }
+// }
