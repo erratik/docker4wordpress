@@ -1,6 +1,6 @@
 <?php
 
-    function sanitize_title($string) {
+    function cutv_sanitize_title($string) {
         return preg_replace(
             array('#[^A-Za-z0-9\-.\' ]#'),
             array(''),

@@ -35,7 +35,7 @@ function cutv_convert_snaptube() {
             
             cutv_log(DEBUG_LEVEL, "vid => $vid, ordering: $ordering");
 
-            $name = sanitize_title($wpvr_video_post->post_title);
+            $name = cutv_sanitize_title($wpvr_video_post->post_title);
             $description = $wpvr_video_post->post_content;
             $slug = $snaptube_post->ID || 0;
             $post_date = $video_meta['wpvr_video_service_date'];
@@ -54,7 +54,7 @@ function cutv_convert_snaptube() {
             // $duration = substr(preg_replace('/\D/', ':', preg_replace($re, $subst, $video_meta['wpvr_video_duration'])), 0, -1);
             $duration = cutv_get_duration($wpvr_id);
             echo $duration;
-            exit;
+            // exit;
 
             $converted_snaptube_video = array(
                 $name, 

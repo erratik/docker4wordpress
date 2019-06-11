@@ -8,33 +8,34 @@
 
 
     <div class="fourteen wide column grid ui flex paddingless full">
-        <div class="fourteen wide column">
+        <div class="sixteen wide column inner-content">
 
-            <video-counts channel="channel" ng-if="channel.counts.published + channel.counts.pending" list-style="inline"></video-counts>
+            <hr ng-show="channel.sources.length">
 
-            <hr ng-show="sources.length">
-            <div class="ui labeled tiny icon">
-                <i class="folder open icon"></i> {{(sources.length) > 0 && sources.length || 'No'}} Sources
-            </div>
-            <hr>
-            <div class="field">
-                <div class="flex center">
-                    <div class="ui  icon tiny" ng-click="channel.enabled = !channel.enabled; updateChannel();">
-                        <i class="toggle icon" ng-class="{ 'on blue': channel.enabled , 'off grey': !channel.enabled }"></i> {{(channel.enabled?'Enabled':'Disabled')}}
+            <video-counts counts="channel.counts" ng-if="channel.counts" list-style="inline"></video-counts>
+            <p ng-if="!channel.counts">No videos found in sources</video-counts>
+                <hr>
+                <div class="ui labeled tiny icon">
+                    <i class="folder open icon"></i> {{(channel.sources.length) > 0 && channel.sources.length || 'No'}} Sources
+                </div>
+                <div class="field">
+                    <div class="flex center">
+                        <div class="ui  icon tiny" ng-click="channel.enabled = !channel.enabled; updateChannel();">
+                            <i class="toggle icon" ng-class="{ 'on blue': channel.enabled , 'off grey': !channel.enabled }"></i> {{(channel.enabled?'Enabled':'Disabled')}}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="field">
-                <div class="flex center">
-                    <div class="ui  icon tiny" ng-click="channel.featured = !channel.featured; updateChannel();">
-                        <i class="icon" ng-class="{ 'checkmark positive': channel.featured , 'remove negative': !channel.featured }"></i> {{(channel.featured?'Featured':'Not featured')}}
+                <div class="field">
+                    <div class="flex center">
+                        <div class="ui  icon tiny" ng-click="channel.featured = !channel.featured; updateChannel();">
+                            <i class="icon" ng-class="{ 'checkmark positive': channel.featured , 'remove negative': !channel.featured }"></i> {{(channel.featured?'Featured':'Not featured')}}
+                        </div>
                     </div>
                 </div>
-            </div>
         </div>
 
-        <div class="two wide column paddingless">
-            <a class="ui small icon blue basic button right" href="#channel/edit/{{channel.pid}}">
+        <div>
+            <a class="ui small icon blue basic button right tiny" href="#channel/edit/{{channel.pid}}">
                 <i class="wrench icon"></i> Manage channel
             </a>
         </div>

@@ -13,19 +13,9 @@ angular.module('cutvApiAdminApp')
             replace: true,
             scope: {
                 channel: '=',
-                sources: '='
             },
             template: '<div>No sources added for channel</div>',
             link: function(scope, element, attrs) {
-
-                let sourceVideoCount;
-                if (!!scope.scources && scope.sources.length) {
-                    scope.sources = sources.map(source => {
-                        return source;
-                    });
-
-                    sourceVideoCount = ChannelService.countSourceVideos(scope);
-                }
 
                 $templateRequest('/wp-content/plugins/cutv-api/app/templates/channel-item.html').then(function(html) {
                     var template = angular.element(html);

@@ -11,38 +11,44 @@ angular.module('cutvApiAdminApp')
 
 .controller('MainCtrl', function($scope, $http, $location, ChannelService) {
 
-
     $scope.init = () => {
+
         var data = {
             count: true,
+            exclude_sources: false,
             action: 'cutv_get_channels',
         };
 
         ChannelService.handlePluginAction(data)
-            .then(channels => {
-                $scope.channels = channels.filter(({
-                    enabled
-                }) => !!enabled).map(channel => ({
+            .then(res => {
+                const datum = res.filter(x => !!x.channel.enabled);
+                $scope.channels = datum.map(({
+                    channel,
+                    sources
+                }) => ({
                     ...channel,
+                    sources,
                     isLoading: true
                 }));
-                return $scope.channels;
+                return datum.map(x => x.sources);
             })
-            .then(channels => {
-
-                debugger;
-                channels.forEach(channel => {
-                    return ChannelService.handlePluginAction({
-                        channel_id: channel.pid,
-                        count: true,
-                        action: 'cutv_get_sources_by_channel'
-                    }).then(sources => {
-                        $scope.sources = sources;
-                        channel.isLoading = false;
+            .then(sources => {
+                const data = Array.prototype.concat.apply([], sources.map(x => x));
+                Array.prototype.concat.apply([], data.map(x => x.source))
+                    .map((source, i) => {
+                        $scope.channels[i].counts = ['publish', 'draft', 'pending'].map(status => {
+                            const count = {};
+                            count[status] = data[i].videos[status];
+                            data.reduce((_, curr) => count[status] += curr.videos[status]);
+                            return count;
+                        });
+                        $scope.channels[i].isLoading = false;
+                        return source;
                     });
-                });
-
-            });
+            }).finally(() => $scope.channels = $scope.channels.map(channel => {
+                channel.isLoading = false;
+                return channel;
+            }));
 
     };
 

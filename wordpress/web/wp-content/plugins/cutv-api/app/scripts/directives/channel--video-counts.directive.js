@@ -7,19 +7,28 @@
  * # manageChannel
  */
 angular.module('cutvApiAdminApp')
-    .directive('videoCounts', function ($http, $compile, ChannelService) {
+    .directive('videoCounts', function($http, $compile, ChannelService) {
         return {
             restrict: 'E',
             replace: true,
             scope: {
-                channel: '=',
+                counts: '=',
                 pre: '@',
                 display: '@',
                 listStyle: '@'
             },
-            templateUrl: '/wp-content/plugins/cutv-api/app/templates/directives/channel--video-counts.html',
-            link: function (scope, element, attrs) {
+            templateUrl: '/wp-content/plugins/cutv-api/app/templates/video-counts.html',
+            link: function(scope) {
 
+                scope.status = {};
+                scope.counts.forEach(count => {
+                    scope.status = {
+                        ...scope.status,
+                        ...count
+                    };
+                });
+
+                debugger;
 
             }
         };

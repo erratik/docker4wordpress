@@ -153,23 +153,28 @@ function cutv_get_sources_by_channel($channel_id, $count = false, $json = true) 
 
     global $wpdb;
     
-    $channel_id = $_REQUEST['channel_id'] !== null ? $_REQUEST['channel_id'] : $channel_id;
+    $channel_id = $_REQUEST['channel_id'] ? $_REQUEST['channel_id'] : $channel_id;
+
         
     $channel_source_ids = cutv_get_source_meta_ids( CUTV_SOURCE_PID, $channel_id );
-    
-    $sources = [];
-    
-    foreach ($channel_source_ids as $source_id) {
-        
-        $wpvr_posts = cutv_wpvr_video_by_ids($wpdb->get_results( "SELECT video_id FROM " . WPVR_VIDEO_META ." WHERE meta_key = 'wpvr_video_sourceId' AND meta_value = '$source_id'"));
-        $sorted_videos = cutv_sort_source_videos_by_status($wpvr_posts, $count);
-        $source_meta = cutv_wpvr_source_meta($source_id);
-        
-        $sources[] = array(
-            'source' => $source_meta,
-            'videos' => $sorted_videos
-        );
 
+    // cutv_log(4, $channel_source_ids);
+    // exit;
+    $sources = [];
+       
+    if ($channel_source_ids) {
+        foreach ($channel_source_ids as $source_id) {
+            
+            $wpvr_posts = cutv_wpvr_video_by_ids($wpdb->get_results( "SELECT video_id FROM " . WPVR_VIDEO_META ." WHERE meta_key = 'wpvr_video_sourceId' AND meta_value = '$source_id'"));
+            $sorted_videos = cutv_sort_source_videos_by_status($wpvr_posts, $count);
+            $source_meta = cutv_wpvr_source_meta($source_id);
+            
+            $sources[] = array(
+                'source' => $source_meta,
+                'videos' => $sorted_videos
+            );
+
+        }
     }
     
     if ($json) {

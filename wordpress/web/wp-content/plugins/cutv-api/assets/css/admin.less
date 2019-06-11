@@ -1,5 +1,10 @@
 @import "core/vars";
 
+.ui.modal {
+  max-width: 650px;
+  margin: 0 0 0 -25% !important;
+}
+
 // general
 .flex {
   display: flex;
@@ -11,6 +16,10 @@
   &.center {
     align-items: center;
   }
+}
+
+.paddingless {
+  padding: 0 !important;
 }
 
 .full {
@@ -54,6 +63,9 @@ input[type=checkbox] {
 }
 
 .cutv-app-wrapper {
+
+  font-size: 90%;
+  line-height: 1.5;
 
   .flex.center.ui.list>.item {
     padding: 0 .5rem 0.5rem 0

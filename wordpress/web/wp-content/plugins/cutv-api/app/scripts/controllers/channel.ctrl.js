@@ -14,31 +14,31 @@ angular.module('cutvApiAdminApp')
     // $scope.activeTab = 'sources';
     $scope.sources = null;
 
-    $scope.channel = cutv.channels.find(c => c.pid == $routeParams.channelId);
+
     // debugger;
 
-    (async() => {
+    // (async() => {
+    //     $scope.channel = await cutv.channels.find(c => c.pid == $routeParams.channelId);
+    //     const sources = await ChannelService.getSources($scope.channel.pid).then((sources) => sources);
+    //     $scope.sources = {
+    //         selected: sources.filter(s => s.channel.pid == $routeParams.channelId).map(s => {
+    //             s.selected = true;
+    //             return s;
+    //         }),
+    //         available: sources.filter(s => !s.channel.pid).map(s => {
+    //             s.selected = false;
+    //             return s;
+    //         })
+    //     };
+    //     // debugger;
 
-        const sources = await ChannelService.getSources($scope.channel.pid).then((sources) => sources);
-        $scope.sources = {
-            selected: sources.filter(s => s.channel.pid == $routeParams.channelId).map(s => {
-                s.selected = true;
-                return s;
-            }),
-            available: sources.filter(s => !s.channel.pid).map(s => {
-                s.selected = false;
-                return s;
-            })
-        };
-        // debugger;
+    //     // $scope.channel = cutv.channels.find(c => c.pid == $routeParams.channelId);
+    //     // const sources = $scope.;
+    //     // if () {
+    //     // $scope.videos = await ChannelService.getSourceVideos($scope.sources.selected.map(s => s.source_id)).then((videos) => videos);
+    //     // }
 
-        // $scope.channel = cutv.channels.find(c => c.pid == $routeParams.channelId);
-        // const sources = $scope.;
-        // if () {
-        // $scope.videos = await ChannelService.getSourceVideos($scope.sources.selected.map(s => s.source_id)).then((videos) => videos);
-        // }
-
-    })();
+    // })();
 
 
     // $scope.activeTab = !!$scope.sources && $scope.sources.selected.length ? 'videos' : 'sources';
