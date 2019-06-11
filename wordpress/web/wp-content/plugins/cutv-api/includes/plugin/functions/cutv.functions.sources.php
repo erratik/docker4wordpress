@@ -10,8 +10,8 @@ function cutv_get_sources_info($channel_id = null) {
     
     foreach ($sources as $source) {
         
-        $cutv_meta = get_source_meta($source->ID, CUTV_SOURCE_PID, true);
-        $wpvr_meta = get_source_meta($source->ID, 'wpvr_source_name', true);
+        $cutv_meta = cutv_get_source_meta($source->ID, CUTV_SOURCE_PID, true);
+        $wpvr_meta = cutv_get_source_meta($source->ID, 'wpvr_source_name', true);
         $source_pid = $cutv_meta->meta_value;
         $source_name = $wpvr_meta->meta_value;
         
@@ -60,7 +60,7 @@ function cutv_update_channel_sources() {
         
         cutv_log(DEBUG_LEVEL-1, '[cutv_update_channel_sources] '. "CUTV_SOURCE_PID: ".CUTV_SOURCE_PID, false);
         
-        $source_ids = get_source_meta_ids(CUTV_SOURCE_PID, $channel_id );
+        $source_ids = cutv_get_source_meta_ids(CUTV_SOURCE_PID, $channel_id );
         $removing = ($source_ids ? $source_ids : []);
         $existing_source_ids = ($source_ids ? $source_ids : []);
         $received_source_ids = explode(',', $_REQUEST['sources']);
@@ -110,7 +110,7 @@ function cutv_update_channel_sources() {
         
     }
 
-    $channel_source_ids = get_source_meta_ids(CUTV_SOURCE_PID, $channel_id );
+    $channel_source_ids = cutv_get_source_meta_ids(CUTV_SOURCE_PID, $channel_id );
 
     cutv_log(DEBUG_LEVEL-1, '[cutv_update_channel_sources] '. "CHANNEL SOURCE IDS: ");    
     echo json_encode($channel_source_ids);
@@ -149,86 +149,33 @@ function cutv_get_source_videos($source) {
 }
 
 
-function cutv_get_sources_by_channel($channel_id, $abridged = true) {
+function cutv_get_sources_by_channel($channel_id, $count = false, $json = true) {
 
     global $wpdb;
+    
+    $channel_id = $_REQUEST['channel_id'] !== null ? $_REQUEST['channel_id'] : $channel_id;
+        
+    $channel_source_ids = cutv_get_source_meta_ids( CUTV_SOURCE_PID, $channel_id );
+    
+    $sources = [];
+    
+    foreach ($channel_source_ids as $source_id) {
+        
+        $wpvr_posts = cutv_wpvr_video_by_ids($wpdb->get_results( "SELECT video_id FROM " . WPVR_VIDEO_META ." WHERE meta_key = 'wpvr_video_sourceId' AND meta_value = '$source_id'"));
+        $sorted_videos = cutv_sort_source_videos_by_status($wpvr_posts, $count);
+        $source_meta = cutv_wpvr_source_meta($source_id);
+        
+        $sources[] = array(
+            'source' => $source_meta,
+            'videos' => $sorted_videos
+        );
 
-    if (isset($_REQUEST)) {
-        $channel_id = $_REQUEST['channel_id'];
-        $abridged = false;
     }
     
-    $channel_source_ids = get_source_meta_ids( CUTV_SOURCE_PID, $channel_id );
-    
-
-    if ($channel_source_ids == null) {
-        echo "no channels source is";
-        echo json_encode([]);
-        die();
-    }
-    
-    if ($abridged == false) {
-        
-        $sources = [];
-        foreach ($channel_source_ids as $source_id) {
-            
-            $args = array(
-                'numberposts' => -1,
-                'post_type'   => 'wpvr_video',
-                'post_status' => 'any',
-                'meta_query' => array(
-                    array(
-                        'key'   => 'wpvr_video_sourceId', 
-                        'value' => $source_id
-                    )
-                ));
-                    
-            $posts =  cutv_get_snaptube_posts($args);
-            
-            cutv_log(5,  $posts) ;
-            $_videos = $wpdb->get_results( "SELECT video_id FROM " . WPVR_VIDEO_META ." WHERE meta_key = 'wpvr_video_sourceId' AND meta_value = '$source_id'");
-            $_wpvr_posts = cutv_wpvr_video_by_ids($_videos);
-            $sorted = cutv_sort_source_videos_by_status($_wpvr_posts);
-
-            
-            $source_videos = new stdClass;
-            $source_videos->unpublished = [];
-            $source_videos->published = [];
-            $source_videos->pending = [];
-            
-            cutv_log(DEBUG_LEVEL, $posts, true);
-            
-            
-            foreach ($posts as $post) {
-                cutv_log(DEBUG_LEVEL, 'vid: '. $post->snaptube_vid . ' => '. get_post_meta($post->ID, '_cutv_snaptube_video', true) . ' (' . $post->post_status.') ' . $post->post_title, true);
-                
-                if ($post->post_status == 'pending') { // pending
-                    
-                    $source_videos->unpublished[] = $post->ID;
-                } elseif ($post->post_status == 'draft') { // draft
-                    $source_videos->pending[] = $post->ID;
-                } else { // publish
-                    $source_videos->published[] = $post->ID;
-                }
-            }
-            
-            
-            $sources[] = (object) [
-                'source_id' => $source_id,
-                'source_video_counts' => $source_videos,
-                'source_name' => get_post_meta( $source_id, 'wpvr_source_name', true )
-            ];
-        }
-        if (isset($_REQUEST)) {
-            cutv_log(4, $sources);
-            echo json_encode($sources);
-            echo 'xxxx';
-        }
-        
+    if ($json) {
+        echo json_encode($sources);
     } else {
-        
-        return $source_ids;
-        
+        return $sources;
     }
     
     die();
@@ -238,119 +185,54 @@ add_action('wp_ajax_nopriv_cutv_get_sources_by_channel', 'cutv_get_sources_by_ch
 add_action('wp_ajax_cutv_get_sources_by_channel', 'cutv_get_sources_by_channel');
         
 
-//!----------------------------------------- OLDER FUNCTIONS TO BE REFACTORED ----------------------------------------------------------------------
+//** ----------------------------------------- DEPRECATED ----------------------------------------------------- *// 
 
-
-function cutv_get_source_video_posts($source_id) {
-
-    global $wpdb;
-
-    if (isset($_REQUEST)) {
-        $source_id = $_REQUEST['source_id'];
-        $args = array(
-            'numberposts' => -1,
-            'post_type'   => 'wpvr_video',
-            'post_status' => 'any',
-            'meta_query' => array(
-                array(
-                    'key'   => 'wpvr_video_sourceId',
-                    'value' => $source_id
-                    )
-                    )
-                );
-                
-        $video_posts = get_posts( $args );
-        
-        // find the youtube thumb
-        foreach($video_posts as $video_post) {
-            $video_post = cutv_get_snaptube_post_data($video_post, $video_post->ID);
-        }
-        
-        echo json_encode($video_posts);
-    }
-    die();
-}
-add_action('wp_ajax_cutv_get_source_video_posts', 'cutv_get_source_video_posts');
-    
-// function cutv_get_source_videos($source_id, $meta = true) {
+// function cutv_move_source_videos() {
     
 //     global $wpdb;
     
-//     // find out how many videos are in that source?
-//     $source_videos = $wpdb->get_results("SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key='wpvr_video_sourceId' AND meta_value=". $source_id );
-//     $response = null;
-//     $source_videos_extended = [];
-//     if (count($source_videos)) {
+//     if (isset($_REQUEST)) {
+        
+//         $source_id = $_REQUEST['currentSrc'];
+//         $new_source = $_REQUEST['newSrc'];
+//         $source_videos = $wpdb->get_results("SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key='wpvr_video_sourceId' AND meta_value=". $source_id );
         
 //         foreach ($source_videos as $video) {
-//             $snaptube_video = get_post_meta( $video->post_id, '_cutv_snaptube_video', true );
+//             update_post_meta($video->post_id, 'wpvr_video_sourceId', $new_source);
+//             cutv_log(DEBUG_LEVEL, "video $video->post_id was moved to $new_source");
+//         }
+        
+//         if ($_REQUEST['movePlaylists'] == true) {
+//             $new_playlists =  '';
+//             $currentSrc_YT_playlists = get_post_meta($source_id, 'wpvr_source_playlistIds_yt', true);
+//             $newSource_YT_playlists = get_post_meta($new_source, 'wpvr_source_playlistIds_yt', true);
             
-//             if (!$snaptube_video) {
-//                 $response['unpublished_videos'][]= $video->post_id;
-//             } else {
-//                 $response['published_videos'][] = $video->post_id;
-//                 // if i want meta, i probably don't don't want the entire video info
-//                 if (!$meta) {
-//                     echo '[cutv_get_source_videos] snaptube post id for ' . $video->post_id, ': ', $snaptube_video, "\n";
-//                     $response['videos'][] = cutv_get_snaptube_video( get_post_meta( $video->post_id, '_cutv_snaptube_video', true ));
-//                 }
+//             cutv_log(4, "current youtube playlists:  $currentSrc_YT_playlists");
+//             cutv_log(4, "new source youtube playlists:  $newSource_YT_playlists");
+            
+            
+//             $playlists = explode(',', $newSource_YT_playlists);
+//             foreach ($playlists as $playlist) {
+//                 $playlists_exist = strrpos($currentSrc_YT_playlists, $newSource_YT_playlists);
+//                 $new_playlists = ($playlists_exist === false) ? $currentSrc_YT_playlists.','.$newSource_YT_playlists : $currentSrc_YT_playlists;
 //             }
             
+//             update_post_meta($new_source, 'wpvr_source_playlistIds_yt', $new_playlists);
+            
+//             cutv_log(DEBUG_LEVEL, "all source youtube playlists after update:  ". $new_playlists);
             
 //         }
+        
+//         $wpdb->delete( $wpdb->postmeta, array( 'post_id' => $source_id ) );
+//         $wpdb->delete( $wpdb->posts, array( 'ID' => $source_id ) );
+        
+//         // echo json_encode();
+        
 //     }
+//     die();
     
-//     return $meta ? $response : count($source_videos);
 // }
-
-
-
-function cutv_move_source_videos() {
-    
-    global $wpdb;
-    
-    if (isset($_REQUEST)) {
-        
-        $source_id = $_REQUEST['currentSrc'];
-        $new_source = $_REQUEST['newSrc'];
-        $source_videos = $wpdb->get_results("SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key='wpvr_video_sourceId' AND meta_value=". $source_id );
-        
-        foreach ($source_videos as $video) {
-            update_post_meta($video->post_id, 'wpvr_video_sourceId', $new_source);
-            cutv_log(DEBUG_LEVEL, "video $video->post_id was moved to $new_source");
-        }
-        
-        if ($_REQUEST['movePlaylists'] == true) {
-            $new_playlists =  '';
-            $currentSrc_YT_playlists = get_post_meta($source_id, 'wpvr_source_playlistIds_yt', true);
-            $newSource_YT_playlists = get_post_meta($new_source, 'wpvr_source_playlistIds_yt', true);
-            
-            cutv_log(4, "current youtube playlists:  $currentSrc_YT_playlists");
-            cutv_log(4, "new source youtube playlists:  $newSource_YT_playlists");
-            
-            
-            $playlists = explode(',', $newSource_YT_playlists);
-            foreach ($playlists as $playlist) {
-                $playlists_exist = strrpos($currentSrc_YT_playlists, $newSource_YT_playlists);
-                $new_playlists = ($playlists_exist === false) ? $currentSrc_YT_playlists.','.$newSource_YT_playlists : $currentSrc_YT_playlists;
-            }
-            
-            update_post_meta($new_source, 'wpvr_source_playlistIds_yt', $new_playlists);
-            
-            cutv_log(DEBUG_LEVEL, "all source youtube playlists after update:  ". $new_playlists);
-            
-        }
-        
-        $wpdb->delete( $wpdb->postmeta, array( 'post_id' => $source_id ) );
-        $wpdb->delete( $wpdb->posts, array( 'ID' => $source_id ) );
-        
-        // echo json_encode();
-        
-    }
-    die();
-    
-}
-add_action('wp_ajax_cutv_move_source_videos', 'cutv_move_source_videos');
+// add_action('wp_ajax_cutv_move_source_videos', 'cutv_move_source_videos');
     
     
     

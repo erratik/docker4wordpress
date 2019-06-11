@@ -28,30 +28,31 @@ angular.module('cutvApiAdminApp')
     };
 
 
-    ChannelService.makeSourceObj = function(sources) {
-        var channel_id = scope.channelId;
-        scope.channel['sources'] = scope.sources.filter((src) => {
-            return src.selected
-        });
-    }
+    // ChannelService.makeSourceObj = function(sources) {
+    //     var channel_id = scope.channelId;
+    //     scope.channel['sources'] = scope.sources.filter((src) => {
+    //         return src.selected
+    //     });
+    // }
 
 
-    ChannelService.moveSourceVideos = function(currentSrc, newSrc, movePlaylists) {
-        return $http.get(`/wp-admin/admin-ajax.php?action=cutv_move_source_videos&currentSrc=${currentSrc}&newSrc=${newSrc}&movePlaylists=${movePlaylists}`).then(function(res) {
-            return res.data;
-        });
-    };
+    // ChannelService.moveSourceVideos = function(currentSrc, newSrc, movePlaylists) {
+    //     return $http.get(`/wp-admin/admin-ajax.php?action=cutv_move_source_videos&currentSrc=${currentSrc}&newSrc=${newSrc}&movePlaylists=${movePlaylists}`).then(function(res) {
+    //         return res.data;
+    //     });
+    // };
 
     ChannelService.getSourceVideos = function(sources) {
         return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_sources_videos&sources=${sources.join(',')}&json=true`).then(function(res) {
             return res.data;
         });
     };
-    ChannelService.updateVideos = function(videos) {
-        return $http.get(`/wp-admin/admin-ajax.php?action=cutv_update_videos&video_ids=${videos.join(',')}&json=true`).then(function(res) {
-            return res.data;
-        });
-    };
+
+    // ChannelService.updateVideos = function(videos) {
+    //     return $http.get(`/wp-admin/admin-ajax.php?action=cutv_update_videos&video_ids=${videos.join(',')}&json=true`).then(function(res) {
+    //         return res.data;
+    //     });
+    // };
 
     ChannelService.wpRequest = function(query) {
         return $http.get(`/wp-admin/admin-ajax.php?${toQueryString(query)}&json=true`).then(function(res) {

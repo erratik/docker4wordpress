@@ -1,6 +1,6 @@
 <?php
 
-    function sanitizeTitle($string) {
+    function sanitize_title($string) {
         return preg_replace(
             array('#[^A-Za-z0-9\-.\' ]#'),
             array(''),
@@ -50,26 +50,19 @@
 		}
 	}
 	
-    /* Apply filters on videos Found */
-    if( ! function_exists( 'cutv_filter_videos_found' ) ) {
-        function cutv_filter_videos_found( $videosFound , $options ) {
-            return $videosFound;
-        }
-    }
-
     /* Get Video Formated Duration by post id */
-    if( ! function_exists( 'cutv_get_duration' ) ) {
-        function cutv_get_duration( $post_id = '' , $return_seconds = FALSE ) {
-            if( $post_id == '' ) {
-                global $post;
-                $post_id = $post->ID;
-            }
-            $duration = get_post_meta( $post_id , 'cutv_video_duration' , TRUE );
-            $r        = cutv_get_duration_string( $duration , $return_seconds );
-
-            return $r;
+    
+    function cutv_get_duration( $post_id = '' , $return_seconds = FALSE ) {
+        if( $post_id == '' ) {
+            global $post;
+            $post_id = $post->ID;
         }
+        $duration = get_post_meta( $post_id , 'wpvr_video_duration' , TRUE );
+        $r        = cutv_get_duration_string( $duration , $return_seconds );
+
+        return $r;
     }
+        
 
     /* Get Video Formated Duration by post id */
     if( ! function_exists( 'cutv_get_duration_string' ) ) {
@@ -99,5 +92,13 @@
             }
 
             return $r;
+        }
+    }
+
+
+    /* Apply filters on videos Found */
+    if( ! function_exists( 'cutv_filter_videos_found' ) ) {
+        function cutv_filter_videos_found( $videosFound , $options ) {
+            return $videosFound;
         }
     }

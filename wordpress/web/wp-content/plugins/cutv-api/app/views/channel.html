@@ -38,9 +38,12 @@
         <manage-sources sources="sources" ng-if="sources"></manage-sources>
     </div>
 
-    <div id="display" ng-controller="ChannelDisplayCtrl" ng-switch-when="display">
-        <div ng-include="'/wp-content/plugins/cutv-api/app/templates/includes/channel--display.html'"></div>
+    <div id="display" ng-switch-when="display">
+        <!-- <manage-sources sources="sources" ng-if="sources"></manage-sources> -->
     </div>
+    <!-- <div id="display" ng-controller="ChannelDisplayCtrl" ng-switch-when="display">
+        <div ng-include="'/wp-content/plugins/cutv-api/app/templates/includes/channel--display.html'"></div>
+    </div> -->
 
 
 </div>

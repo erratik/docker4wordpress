@@ -3,13 +3,13 @@
 define('DEBUG_LEVEL', 2);
 
 // get the source_id field from sources that match key/value
-function get_source_meta_ids( $meta_key, $meta_value) {
+function cutv_get_source_meta_ids( $meta_key, $meta_value) {
     global $wpdb;
     
     $query_string = "SELECT source_id FROM " . WPVR_SOURCE_META . " WHERE meta_key = '$meta_key' AND meta_value = '$meta_value'";
     $rows = $wpdb->get_results($query_string);
     
-    cutv_log(DEBUG_LEVEL, '[get_source_meta_ids] '. $query_string);
+    cutv_log(DEBUG_LEVEL, '[cutv_get_source_meta_ids] '. $query_string);
     
     foreach ($rows as $meta_row) {
         $source_ids[] = $meta_row->source_id;
@@ -18,11 +18,11 @@ function get_source_meta_ids( $meta_key, $meta_value) {
     return $source_ids;
 }
 
-function get_source_meta($source_id, $meta_key, $meta_value = null, $return_meta = true)  {
+function cutv_get_source_meta($source_id, $meta_key, $meta_value = null, $return_meta = true)  {
     global $wpdb;
     
     $query_string = "SELECT * FROM " . WPVR_SOURCE_META . " WHERE source_id = $source_id AND meta_key = '$meta_key'";
-    cutv_log(DEBUG_LEVEL, '[get_source_meta_ids] '. $query_string);
+    cutv_log(DEBUG_LEVEL, '[cutv_get_source_meta_ids] '. $query_string);
 
     return $wpdb->get_row($query_string);
 }
@@ -120,7 +120,7 @@ function meta_action_result($source_id, $meta_key, $meta_value, $return_meta, $r
         return false;
     } elseif($return_meta) {
         cutv_log(DEBUG_LEVEL-1, "[$from] returning meta");
-        return get_source_meta($source_id, $meta_key, $meta_value);
+        return cutv_get_source_meta($source_id, $meta_key, $meta_value);
     } else {
         return $result;
     }
@@ -140,4 +140,23 @@ function cutv_get_sources($channel_id = null) {
 
     return get_posts( $args );
     
+}
+function cutv_wpvr_source_meta($source_id) {
+    global $wpdb;
+
+    $query_string = "SELECT meta_key,meta_value FROM " . WPVR_SOURCE_META . " WHERE source_id = $source_id AND meta_key IN ('wpvr_source_count_imported','wpvr_source_last_executed_time','wpvr_source_name','wpvr_source_playlistIds_yt','wpvr_source_schedule','wpvr_source_schedule_day','wpvr_source_schedule_time','wpvr_source_status')";
+    
+    $rows = $wpdb->get_results($query_string);
+    
+    $source_meta = array();
+    foreach ($rows as $i => $meta_row) {
+        $keys = [];
+        foreach ($meta_row as $k => $meta_column) {
+            array_push($keys, $meta_column);
+        }
+        $source_meta[$keys[0]] = $keys[1];
+        
+    }
+    
+    return $source_meta;
 }

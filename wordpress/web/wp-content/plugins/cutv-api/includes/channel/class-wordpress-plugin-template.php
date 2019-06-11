@@ -313,8 +313,6 @@ class CUTV_Channel {
                 wp_register_script($this->_token . '-ctrl-channel', esc_url($this->app_scripts_dir) . 'controllers/channel.ctrl' . $this->script_suffix . '.js', $this->_version);
                 wp_enqueue_script($this->_token . '-ctrl-channel');
         
-                wp_register_script($this->_token . '-ctrl-display-channel', esc_url($this->app_scripts_dir) . 'controllers/channel-display.ctrl' . $this->script_suffix . '.js', $this->_version);
-                wp_enqueue_script($this->_token . '-ctrl-display-channel');
                 wp_register_script($this->_token . '-dir-mng-channel', esc_url($this->app_scripts_dir) . 'directives/channel-item.directive' . $this->script_suffix . '.js', $this->_version);
                 wp_enqueue_script($this->_token . '-dir-mng-channel');
                 wp_register_script($this->_token . '-dir-video-counts', esc_url($this->app_scripts_dir) . 'directives/channel--video-counts.directive' . $this->script_suffix . '.js', $this->_version);

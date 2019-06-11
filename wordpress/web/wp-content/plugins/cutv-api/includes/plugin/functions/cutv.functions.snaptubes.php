@@ -3,7 +3,7 @@
 
 function cutv_convert_snaptube() {
     
-    // The $_REQUEST contains all the data sent via ajax
+
     if (isset($_REQUEST)) {
         global $wpdb;
         wp_suspend_cache_addition(true);
@@ -18,7 +18,7 @@ function cutv_convert_snaptube() {
             $wpvr_video_post = get_post($wpvr_id);
             $snaptube_post = $wpdb->get_row("SELECT * FROM " . $wpdb->posts . " WHERE post_type='videogallery' AND post_title ='" . $wpvr_video_post->post_title."'");
             $video_meta = cutv_wpvr_video_meta($wpvr_id);
-            $channel_id = get_source_meta($video_meta['wpvr_video_sourceId'], CUTV_SOURCE_PID, true)->meta_value;
+            $channel_id = cutv_get_source_meta($video_meta['wpvr_video_sourceId'], CUTV_SOURCE_PID, true)->meta_value;
             $vids = $wpdb->get_results("SELECT vid, ordering FROM " . SNAPTUBE_VIDEOS ." ORDER BY vid DESC LIMIT 1");
             
             cutv_log(DEBUG_LEVEL, "[cutv_convert_snaptube] $method -> $wpvr_id");
@@ -35,7 +35,7 @@ function cutv_convert_snaptube() {
             
             cutv_log(DEBUG_LEVEL, "vid => $vid, ordering: $ordering");
 
-            $name = sanitizeTitle($wpvr_video_post->post_title);
+            $name = sanitize_title($wpvr_video_post->post_title);
             $description = $wpvr_video_post->post_content;
             $slug = $snaptube_post->ID || 0;
             $post_date = $video_meta['wpvr_video_service_date'];
@@ -49,9 +49,12 @@ function cutv_convert_snaptube() {
             $file_type = 1;
             
             // FORMAT DURATION
-            $re = '/^PT(\d+H)?(\d+M)?(\d+S)?$/';
-            $subst = '$1$2$3';
-            $duration = substr(preg_replace('/\D/', ':', preg_replace($re, $subst, $video_meta['wpvr_video_duration'])), 0, -1);
+            // $re = '/^PT(\d+H)?(\d+M)?(\d+S)?$/';
+            // $subst = '$1$2$3';
+            // $duration = substr(preg_replace('/\D/', ':', preg_replace($re, $subst, $video_meta['wpvr_video_duration'])), 0, -1);
+            $duration = cutv_get_duration($wpvr_id);
+            echo $duration;
+            exit;
 
             $converted_snaptube_video = array(
                 $name, 
@@ -169,10 +172,11 @@ function cutv_convert_snaptube() {
 add_action('wp_ajax_cutv_convert_snaptube', 'cutv_convert_snaptube');
 add_action('wp_ajax_nopriv_cutv_convert_snaptube', 'cutv_convert_snaptube');
 
-
+//* not done yet
+// todo: implement this so we can add video to unwanted list, and remove the snaptube video, the wpvr video and the video gallery video not implemented yet
 function cutv_trash_snaptube_video() {
 
-    // The $_REQUEST contains all the data sent via ajax
+
     if (isset($_REQUEST)) {
         global $wpdb;
 
