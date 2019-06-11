@@ -1,8 +1,6 @@
 <?php
 
 define( 'DEBUG_LEVEL', 2);
-include_once(CUTV_PLUGIN_FOLDER . '/includes/sources/cutv.sources.helpers.php');
-include_once(CUTV_PLUGIN_FOLDER . '/includes/videos/cutv.videos.helpers.php');
 
 function cutv_get_sources_info($channel_id = null) {
     
@@ -47,7 +45,7 @@ function cutv_get_sources_info($channel_id = null) {
     }
     echo json_encode($all_sources);
     
-    // Always die in functions echoing ajax content
+    
     die();
 }
 add_action('wp_ajax_cutv_get_sources_info', 'cutv_get_sources_info');
@@ -55,7 +53,7 @@ add_action('wp_ajax_cutv_get_sources_info', 'cutv_get_sources_info');
 // updates sources against their channels
 function cutv_update_channel_sources() {
     
-    // The $_REQUEST contains all the data sent via ajax
+    
     if (isset($_REQUEST)) {
 
         $channel_id = $_REQUEST['channel'];
@@ -153,7 +151,7 @@ function cutv_get_source_videos($source) {
 
 function cutv_get_sources_by_channel($channel_id) {
     $abridged = true;
-    // The $_REQUEST contains all the data sent via ajax
+    
     if (isset($_REQUEST)) {
         $channel_id = $_REQUEST['channel_id'];
         $abridged = false;
@@ -229,38 +227,6 @@ function cutv_get_sources_by_channel($channel_id) {
 }
 add_action('wp_ajax_cutv_get_sources_by_channel', 'cutv_get_sources_by_channel');
         
-function cutv_update_videos() {
-	global $wpdb;
-	// The $_REQUEST contains all the data sent via ajax
-	if (isset($_REQUEST)) {
-
-        // $video_ids = $_REQUEST['video_ids'];
-        // $channel_id = $_REQUEST['source_id'];
-        $video_ids = explode(',', $_REQUEST['video_ids']);
-        $method = $_REQUEST['method'];
-        // cutv_log(DEBUG_LEVEL, '[cutv_update_videos] '. "CUTV_SOURCE_PID: ", false);
-        
-        echo($method);
-        foreach ($video_ids as $video_id) {
-            echo($video_id );
-            // SNAPTUBE_VIDEOS
-
-            $post = get_post( $video_id );
-            // print_r($post);
-            // echo "SELECT * FROM ".SNAPTUBE_VIDEOS." WHERE name = '". addslashes($post->post_title) ."'";
-            $vid = $wpdb->get_row("SELECT * FROM ".SNAPTUBE_VIDEOS." WHERE name = '". addslashes($post->post_title) ."'");
-            print_r($vid);
-
-        }
-
-        
-	}
-
-		cutv_log(DEBUG_LEVEL, '[cutv_update_videos] '. "CHANNEL SOURCE IDS: ");   
-		echo json_encode($video_ids);
-	die();
-}
-add_action('wp_ajax_cutv_update_videos', 'cutv_update_videos');
 
 //!----------------------------------------- OLDER FUNCTIONS TO BE REFACTORED ----------------------------------------------------------------------
 
