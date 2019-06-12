@@ -9,73 +9,50 @@
  */
 angular.module('cutvApiAdminApp')
 
-.controller('ChannelCtrl', function($scope, $http, $location, $routeParams, ChannelService) {
+.controller('ChannelCtrl', function($scope, $rootScope, $http, $location, $routeParams, ChannelService) {
 
-    // $scope.activeTab = 'sources';
-    $scope.sources = null;
-
-
-    // debugger;
-
-    // (async() => {
-    //     $scope.channel = await cutv.channels.find(c => c.pid == $routeParams.channelId);
-    //     const sources = await ChannelService.getSources($scope.channel.pid).then((sources) => sources);
-    //     $scope.sources = {
-    //         selected: sources.filter(s => s.channel.pid == $routeParams.channelId).map(s => {
-    //             s.selected = true;
-    //             return s;
-    //         }),
-    //         available: sources.filter(s => !s.channel.pid).map(s => {
-    //             s.selected = false;
-    //             return s;
-    //         })
-    //     };
-    //     // debugger;
-
-    //     // $scope.channel = cutv.channels.find(c => c.pid == $routeParams.channelId);
-    //     // const sources = $scope.;
-    //     // if () {
-    //     // $scope.videos = await ChannelService.getSourceVideos($scope.sources.selected.map(s => s.source_id)).then((videos) => videos);
-    //     // }
-
-    // })();
-
-
-    // $scope.activeTab = !!$scope.sources && $scope.sources.selected.length ? 'videos' : 'sources';
+    // $scope.sources = null;
     $scope.activeTab = 'sources';
 
-    $scope.$on('channelImageUpdated', (e) => $scope.channel.cutv_channel_img = e.targetScope.filename);
-    $scope.$on('channelUpdated', (e) => $scope.channel = e.targetScope.channel);
 
+    $scope.channel = {
+        isLoading: true
+    };
+    $rootScope.init = async(event = null) => {
 
-    $scope.$on('sourcesUpdated', (e, data) => {
-        $scope.sources = data[0];
-    });
+        var data = {
+            count: 0,
+            exclude_sources: 0,
+            channel_id: $routeParams.channelId,
+            action: 'cutv_get_channels',
+        };
 
-    // $scope.$on('onManageChannelVideos', async(e) => {
-    //     const sources = e.targetScope.sources.map(s => s.source_id);
-    //     $scope.videos = await ChannelService.getSourceVideos(sources).then((videos) => videos);
-    // });
+        await ChannelService.handlePluginAction(data).then(async res => {
 
-    // $scope.$on('onRetrieveSources', async(e) => {
+            $scope.channel = res.channel;
+            const sources = await ChannelService.getSources().then(sources => sources.map(s => {
+                s.selected = s.channel.pid === $scope.channel.pid;
+                return s;
+            }));
 
-    //     debugger;
-    //     const sources = await ChannelService.getSources($scope.channel.pid).then((sources) => sources);
-    //     $scope.sources = {
-    //         selected: sources.filter(s => s.channel.pid == $routeParams.channelId).map(s => {
-    //             s.selected = true;
-    //             return s;
-    //         }),
-    //         available: sources.filter(s => !s.channel.pid).map(s => {
-    //             s.selected = false;
-    //             return s;
-    //         })
-    //     };
-    // });
+            $scope.channel.sources = res.sources;
 
-    $scope.$on('sourceVideosUpdated', (e, sources) => {
-        $scope.sources = sources.map(src => src);
-        ChannelService.countSourceVideos($scope);
-    });
+            $scope.sources = {
+                selected: sources.filter(s => s.selected),
+                available: sources.filter(s => !s.selected)
+            };
+
+            if (event) {
+                // debugger;
+                $scope.$broadcast('reload');
+            }
+
+        });
+    };
+
+    $scope.init();
+
+    $scope.$on('videosUpdated', (e) => $scope.init(e));
+
 
 });

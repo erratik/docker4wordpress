@@ -14,8 +14,8 @@ angular.module('cutvApiAdminApp')
     $scope.init = () => {
 
         var data = {
-            count: true,
-            exclude_sources: false,
+            count: 1,
+            exclude_sources: 0,
             action: 'cutv_get_channels',
         };
 

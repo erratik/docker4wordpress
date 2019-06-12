@@ -9,11 +9,11 @@
             </div>
         </div>
         <div class="item">
-            <select ng-model="selectedAction" ng-options="option.name for option in options">
+            <select ng-model="selectedAction" ng-options="option.label for option in options">
             </select>
         </div>
         <div class="item" ng-if="selectedVideos">
-            <button class="teal ui button" ng-click="updateVideos(selectedAction)">{{selectedAction.name }} <a
+            <button class="teal ui button" ng-click="updateVideos(selectedAction)">{{selectedAction.label }} <a
                     class="ui red circular tiny label">{{ selectedVideos.length }}</a></button>
         </div>
 
@@ -22,54 +22,32 @@
     <div class="ui divided items">
 
         <article class="ui grid item" ng-repeat="source in sources | orderBy:'name':false">
+            <div class="loading-overlay" ng-if="isLoading">
+                <div class="active loader ui"></div>
+            </div>
             <header class="eight wide column">
                 <h3>{{source.name}}</h3>
 
                 <div class="source-header">
-
-                    <div style="position: relative;" ng-if="loading">
-                        <div class="active loader ui"></div>
-                    </div>
-
-                    <div class="ui list flex center" ng-if="!loading && videos[source.source_id].all.length">
-                        <div class="trigger">Multi-Select</div>
+                    <div class="ui list flex center" ng-if="videos[source.name].total">
+                        <div class="left tiny multi-video-selector blue button ui">Multi-Select</div>
                         <div class="choices">
-                            <div class="item" ng-if="videos[source.source_id].published.length ">
-                                <div class="ui left labeled tiny button" ng-click="toggleSourceVideos(source.source_id, 'published')">
-                                    <a class="ui green left pointing label" ng-class="{'basic': !toggles[source.source_id]['published'] }">
-                                        {{videos[source.source_id].published.length }}
+
+                            <div class="item" ng-repeat="option in options">
+                                <div class="ui left labeled tiny button" ng-if="videos[source.name][option.state].length " ng-click="toggleSourceVideos(source, option.state)">
+                                    <a class="ui {{option.color}}  left pointing label" ng-class="{'basic': !toggles[source.name][option.state] }">
+                                        {{videos[source.name][option.state].length }}
                                     </a>
-                                    <div class="ui button green tiny" ng-class="{'basic': !toggles[source.source_id]['published']}">
-                                        Published Videos
+                                    <div class="ui button {{option.color}} tiny" ng-class="{'basic': !toggles[source.name][state]}">
+                                        {{option.label}} Videos
                                     </div>
                                 </div>
                             </div>
-                            <div class="item" ng-if="videos[source.source_id].pending.length ">
-                                <div class="ui left labeled tiny button" ng-click="toggleSourceVideos(source.source_id, 'pending')">
-                                    <a class="ui purple left pointing label" ng-class="{'basic': !toggles[source.source_id]['pending'] }">
-                                        {{videos[source.source_id].pending.length }}
-                                    </a>
-                                    <div class="ui button purple tiny" ng-class="{'basic': !toggles[source.source_id]['pending'] }">
-                                        Pending Videos
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item" ng-if="videos[source.source_id].unpublished.length ">
-                                <div class="ui left labeled tiny button" ng-click="toggleSourceVideos(source.source_id, 'unpublished')">
-                                    <a class="ui grey left pointing label" ng-class="{'basic': !toggles[source.source_id]['unpublished'] }">
-                                        {{videos[source.source_id].unpublished.length }}
-                                    </a>
-                                    <div class="ui button grey tiny" ng-class="{'basic': !toggles[source.source_id]['unpublished'] }">
-                                        Unpublished Videos
-                                    </div>
-                                </div>
-                            </div>
+
                         </div>
 
                     </div>
 
-                    <div class="modals" ng-include="'/wp-content/plugins/cutv-api/app/templates/source-modals.html'">
-                    </div>
 
                 </div>
             </header>
@@ -82,34 +60,37 @@
                     <i class="youtube play icon"></i> Edit source
                 </a>
             </main>
-
-
             <div class="content videos">
 
-                <p ng-if="!videos[source.source_id].all.length && !loading">no videos</p>
+                <div>
+                    <p ng-if="!videos[source.name].total && !isLoading">no videos</p>
+                </div>
 
                 <div class="ui link cards">
-                    <div class="card video-{{video.id}} {{video.selected ? 'selected' : ''}}" ng-repeat="video in videos[source.source_id].all | orderBy:'wpvr_video_service_date':true | filter: query" ng-click="toggleVideoSelected(video)" ng-class="{'selected': isVideoSelected(video)}">
+                    <div class="card video-{{video.ID}} {{video.selected ? 'selected' : ''}}" ng-repeat="video in videos[source.name].all | orderBy:'post_date':true | filter: query" ng-click="toggleVideoSelected(video)" ng-class="{'selected': isVideoSelected(video)}">
 
                         <div class="image">
                             <img ng-src="{{video.thumbnail}}">
                         </div>
                         <div class="content">
-                            <div class="header">{{video.title}}</div>
+                            <div class="header">{{video.post_title}}</div>
                             <div class="meta">
-                                <i class="right floated star icon" ng-click="$event.stopPropagation(); setFeatureVideo(channel.pid)"></i> \
+                                <!-- <i class="right floated star icon" ng-click="$event.stopPropagation(); setFeatureVideo(channel.pid)"></i> -->
                                 <div>
-                                    <i class="ui icon calendar"></i> {{video.wpvr_video_service_date}}
+                                    <i class="ui icon calendar"></i> {{video.post_date}}
                                 </div>
                             </div>
 
-                            <div class="ui label {{video.status}}" ng-class="{'green': video.status === 'publish', 'grey' : video.status === 'draft', 'purple' : video.status === 'pending'}">
-                                <i class="fa wpvr_video_status_icon fa-check-square "></i>{{video.status}}
+                            <div class="ui label {{video.post_status}}" ng-class="{'green': video.post_status === 'publish', 'grey' : video.post_status === 'draft', 'purple' : video.post_status === 'pending'}">
+                                <i class="fa wpvr_video_status_icon fa-check-square "></i>{{video.post_status}}
                             </div>
 
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="modals" ng-include="'/wp-content/plugins/cutv-api/app/templates/source-modals.html'">
             </div>
         </article>
 

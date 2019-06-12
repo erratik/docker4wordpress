@@ -13,9 +13,9 @@ angular
         'ngRoute',
         'flow'
     ])
-    .config(function ($routeProvider, flowFactoryProvider, $httpProvider) {
+    .config(function($routeProvider, flowFactoryProvider, $httpProvider) {
 
-        $httpProvider.defaults.transformRequest = function(data){
+        $httpProvider.defaults.transformRequest = function(data) {
             if (data === undefined) {
                 return data;
             }
@@ -26,17 +26,14 @@ angular
         $routeProvider
             .when('/', {
                 templateUrl: '/wp-content/plugins/cutv-api/app/views/channels.html',
-                controller: 'MainCtrl',
-                controllerAs: 'main'
+                controller: 'MainCtrl'
             })
-            .when('/channel/:channelName/:channelId', {
+            .when('/channel/:action/:channelId', {
                 templateUrl: '/wp-content/plugins/cutv-api/app/views/channel.html',
-                controller: 'ChannelCtrl',
-                controllerAs: 'channel'
+                controller: 'ChannelCtrl'
             })
             .otherwise({
                 redirectTo: '/'
             });
 
     });
-

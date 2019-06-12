@@ -42,7 +42,7 @@ LoadTemplate.prototype.createAndWait = function(callback) {
     var that = this;
 
     // Define parameters for request.
-    req.open('get', this.folderPath + this.tempName + '.handlebars', true);
+    req.open('get', this.folderPath + this.tempName + '.hbs', true);
 
     // Wait for request to complete.
     req.onreadystatechange = function() {

@@ -31,7 +31,7 @@
                     </div>
 
                     <div class="six wide column" ng-if="sources.selected.length">
-                        <h4 class="ui header">Sources assigned to {{channel.playlist_name}}</h4>
+                        <h4 class="ui header">Assigned sources</h4>
                         <div class="item assigned" ng-repeat="source in sources.selected | orderObjectBy:'name' | filter: query ">
                             <div class="ui ">
                                 <input type="checkbox" id="{{source.source_id}}" ng-model="source.selected" ng-change="selectSource(source)">

@@ -14,7 +14,7 @@ angular.module('cutvApiAdminApp')
             restrict: 'E',
             // replace: true,
             scope: {
-                // channel: '=',
+                channel: '=',
                 sources: '='
             },
             templateUrl: '/wp-content/plugins/cutv-api/app/templates/manage-sources.html',
@@ -26,7 +26,6 @@ angular.module('cutvApiAdminApp')
 
                 scope.query = '';
                 scope.updateSuccess = false;
-                scope.channel = cutv.channels.find(c => c.pid == $routeParams.channelId);
 
                 scope.selectedSources = new Set(scope.sources.selected);
                 scope.availableSources = new Set(scope.sources.available);
@@ -52,11 +51,11 @@ angular.module('cutvApiAdminApp')
 
                 scope.updateChannelSources = () => {
 
+                    debugger;
                     if (!scope.channel) {
 
                         return;
                     }
-
                     const data = {
                         action: 'cutv_update_channel_sources',
                         sources: scope.sources.selected.map(s => s.source_id).join(','),
@@ -71,7 +70,8 @@ angular.module('cutvApiAdminApp')
                         scope.sources.selected = scope.sources.selected.filter(source => channelSourceIds.includes(source.source_id));
                         scope.sources.available = scope.sources.available.filter(source => !channelSourceIds.includes(source.source_id));
 
-                        scope.$emit('sourcesUpdated', [scope.sources]);
+                        // scope.$emit('sourcesUpdated', [scope.sources]);
+                        $scope.$emit('videosUpdated');
                         scope.updateSuccess = true;
                     });
 

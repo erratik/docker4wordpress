@@ -133,26 +133,27 @@ add_action('wp_ajax_cutv_get_channel', 'cutv_get_channel');
 
 function cutv_get_channels() {
     global $wpdb;
-
-    $channel_id = isset($_REQUEST) && $_REQUEST['channel_id'] ? $_REQUEST['channel_id'] : 0;
-    $exclude_sources =  $_REQUEST['exclude_sources'] ? $_REQUEST['exclude_sources'] : 0;
-
+    
+    $channel_id = $_REQUEST['channel_id'] ? $_REQUEST['channel_id'] : false;
+    $count = $_REQUEST['count'] === 1;
+    $exclude_sources = $_REQUEST['exclude_sources'];
+    $_REQUEST['json'] = false;
     if ($channel_id) {
-        $countVideos = $_REQUEST['count'] ? true : false;
         
         echo $exclude_sources ? json_encode(cutv_get_channel($channel_id)) : json_encode(array(
             'channel' => cutv_get_channel($channel_id),
-            'sources' => cutv_get_sources_by_channel($channel_id, $countVideos, false),
+            'sources' => cutv_get_sources_by_channel($channel_id, $count, false),
         ));
 
-    } else {
 
+    } else {
+        
         $channels = [];
         $channels_rows = $wpdb->get_results("SELECT * FROM " . SNAPTUBE_PLAYLISTS ." WHERE pid > 1" );
         foreach ($channels_rows as $channel) {
             $channels[] = $exclude_sources ? cutv_get_channel($channel->pid) : array(
                 'channel' => cutv_get_channel($channel->pid),
-                'sources' => cutv_get_sources_by_channel($channel->pid, $countVideos, false),
+                'sources' => cutv_get_sources_by_channel($channel->pid, $count, false),
             );
         };
 

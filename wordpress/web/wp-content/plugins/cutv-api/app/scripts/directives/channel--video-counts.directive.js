@@ -28,8 +28,6 @@ angular.module('cutvApiAdminApp')
                     };
                 });
 
-                debugger;
-
             }
         };
     });

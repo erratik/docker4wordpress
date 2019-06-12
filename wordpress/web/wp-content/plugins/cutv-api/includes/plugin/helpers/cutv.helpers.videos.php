@@ -78,8 +78,9 @@ function cutv_wpvr_video_by_ids($videos) {
     foreach ($videos as $video) {
         
         $wpvr_post = get_post($video->video_id);
-        
-        if ($wpvr_post !== null) {
+
+        if ($wpvr_post !== null) { 
+            $wpvr_post->thumbnail = wp_get_attachment_url( get_post_thumbnail_id(  $wpvr_post->ID ) );
             array_push( $wpvr_posts, $wpvr_post);
         } else {
             $wpdb->delete( WPVR_VIDEO_META, array( 'video_id' => $video->video_id ) );
@@ -92,9 +93,10 @@ function cutv_wpvr_video_by_ids($videos) {
 
 }
 
-function cutv_sort_source_videos_by_status($wpvr_posts, $count = true) {
+function cutv_sort_source_videos_by_status($wpvr_posts, $count = false) {
 
-    
+    global $wpdb;
+
     $videos = array(
         'draft'   => [],
         'publish' => [],
@@ -102,14 +104,15 @@ function cutv_sort_source_videos_by_status($wpvr_posts, $count = true) {
     );
     
     foreach ($wpvr_posts as $wpvr_post) {
-        array_push($videos[$wpvr_post->post_status], $wpvr_post);
+    array_push($videos[$wpvr_post->post_status], $wpvr_post);
     }
 
-    if ($count ) {
+    if ($count) {
         foreach ($videos as $status => $video) {
             $videos[$status] = count($videos[$status]);
         }
     }
+
 
     return $videos;
 

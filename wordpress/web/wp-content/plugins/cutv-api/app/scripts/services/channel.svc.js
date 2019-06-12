@@ -14,12 +14,12 @@ angular.module('cutvApiAdminApp')
 
     // const wpAdminAjaxpath = `/wp-admin/admin-ajax.php?action=`;
 
-    ChannelService.getChannels = function(channelId = null) {
-        return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_channels&channel=${channelId}&json=true`).then(function(res) {
-            // console.log(res.data.filter(c => c.pid === channelId));
-            return channelId ? res.data.filter(c => c.pid === channelId)[0] : res.data;
-        });
-    };
+    // ChannelService.getChannels = function(channelId = null) {
+    //     return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_channels&channel=${channelId}&json=true`).then(function(res) {
+    //         // console.log(res.data.filter(c => c.pid === channelId));
+    //         return channelId ? res.data.filter(c => c.pid === channelId)[0] : res.data;
+    //     });
+    // };
 
     ChannelService.getSources = () => {
         return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_sources_info&json=true`).then(function(res) {
@@ -42,11 +42,11 @@ angular.module('cutvApiAdminApp')
     //     });
     // };
 
-    ChannelService.getSourceVideos = function(sources) {
-        return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_sources_videos&sources=${sources.join(',')}&json=true`).then(function(res) {
-            return res.data;
-        });
-    };
+    // ChannelService.getSourceVideos = function(sources) {
+    //     return $http.get(`/wp-admin/admin-ajax.php?action=cutv_get_sources_videos&sources=${sources.join(',')}&json=true`).then(function(res) {
+    //         return res.data;
+    //     });
+    // };
 
     // ChannelService.updateVideos = function(videos) {
     //     return $http.get(`/wp-admin/admin-ajax.php?action=cutv_update_videos&video_ids=${videos.join(',')}&json=true`).then(function(res) {
@@ -54,19 +54,16 @@ angular.module('cutvApiAdminApp')
     //     });
     // };
 
-    ChannelService.wpRequest = function(query) {
-        return $http.get(`/wp-admin/admin-ajax.php?${toQueryString(query)}&json=true`).then(function(res) {
-            return res.data;
-        });
+    ChannelService.wpRequest = (query) => {
+        return $http.get(`/wp-admin/admin-ajax.php?${toQueryString(query)}&json=true`).then((res) => res.data);
     };
 
-    ChannelService.handlePluginAction = (data) => {
-        data.json = true;
-
-        return $http.get(ajaxurl, {
-            params: data
-        }).then(res => res.data);
-    };
+    ChannelService.handlePluginAction = (data) => $http.get(ajaxurl, {
+        params: {
+            ...data,
+            json: true
+        }
+    }).then(res => res.data);
 
     ChannelService.updateChannel = function($scope, update = true) {
 
@@ -80,48 +77,45 @@ angular.module('cutvApiAdminApp')
             image: $scope.channel.uploadedImage || $scope.channel.cutv_channel_img
         };
 
-        ChannelService.wpRequest(query).then(channel => {
+        this.wpRequest(query).then(channel => {
             if (update) {
                 $scope.channel = channel;
             }
-
             $scope.$emit('channelUpdated');
-
             $scope.updateSuccess = true;
             $timeout(() => $scope.updateSuccess = false, 2000);
         });
 
-
     };
 
-    ChannelService.countSourceVideos = function($scope, cb = null) {
+    // ChannelService.countSourceVideos = function($scope, cb = null) {
 
-        $scope.channel.counts = {};
-        if ($scope.sources.length) {
+    //     $scope.channel.counts = {};
+    //     if ($scope.sources.length) {
 
-            $scope.sources = $scope.sources.map(source => {
+    //         $scope.sources = $scope.sources.map(source => {
 
-                Object.keys(source.source_video_counts).forEach(status => {
-                    source.source_video_counts[status] = !source.source_video_counts[status] ? 0 : source.source_video_counts[status].length;
-                })
+    //             Object.keys(source.source_video_counts).forEach(status => {
+    //                 source.source_video_counts[status] = !source.source_video_counts[status] ? 0 : source.source_video_counts[status].length;
+    //             })
 
-                return source;
-            });
+    //             return source;
+    //         });
 
-            $scope.sources.forEach(source => {
-                Object.keys(source.source_video_counts).forEach(status => {
-                    $scope.channel.counts[status] = _.sumBy($scope.sources, function(o) {
-                        return o.source_video_counts[status];
-                    });
-                });
-            });
+    //         $scope.sources.forEach(source => {
+    //             Object.keys(source.source_video_counts).forEach(status => {
+    //                 $scope.channel.counts[status] = _.sumBy($scope.sources, function(o) {
+    //                     return o.source_video_counts[status];
+    //                 });
+    //             });
+    //         });
 
-        }
+    //     }
 
-        $scope.channel.isLoading = false;
+    //     $scope.channel.isLoading = false;
 
-        return $scope.channel.counts;
-    };
+    //     return $scope.channel.counts;
+    // };
 
 
 

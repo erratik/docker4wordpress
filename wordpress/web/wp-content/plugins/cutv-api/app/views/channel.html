@@ -1,49 +1,5 @@
 <a class="ui labeled icon button teal right" href="#/">
     <i class="angle left icon"></i> Channels
 </a>
-<div class="ui teal header">
-    <div class="ui small image channel">
-        <img ng-src="/wp-content/uploads/channels/{{channel.cutv_channel_img}}" ng-if="channel.cutv_channel_img">
-    </div>
 
-    <div class="content">
-        {{channel.playlist_name}}
-        <div class="sub header mini">Channel Video & Source Management</div>
-    </div>
-</div>
-
-{{activeTab}}
-<div class="ui divider"></div>
-<div class="ui tabular menu">
-    <a class="item" ng-click="activeTab = 'videos'" ng-class="{'active': activeTab === 'videos' }">
-        Videos
-    </a>
-    <a class="item" ng-click="activeTab = 'sources'" ng-class="{'active': activeTab === 'sources' }">
-        Sources
-    </a>
-    <a class="item" ng-click="activeTab = 'display'" ng-class="{'active': activeTab === 'display' }">
-        Display
-    </a>
-</div>
-<div ng-switch="activeTab">
-
-    <!-- <div class="active loader inline ui" ng-switch-default>
-
-    </div> -->
-    <div id="videos">
-        <manage-videos channel="channel" sources="sources.selected" ng-switch-when="videos">
-        </manage-videos>
-    </div>
-    <div id="sources" ng-switch-default>
-        <manage-sources sources="sources" ng-if="sources"></manage-sources>
-    </div>
-
-    <div id="display" ng-switch-when="display">
-        <!-- <manage-sources sources="sources" ng-if="sources"></manage-sources> -->
-    </div>
-    <!-- <div id="display" ng-controller="ChannelDisplayCtrl" ng-switch-when="display">
-        <div ng-include="'/wp-content/plugins/cutv-api/app/templates/includes/channel--display.html'"></div>
-    </div> -->
-
-
-</div>
+<channel channel="channel" sources="sources"></channel>

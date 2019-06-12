@@ -18,100 +18,102 @@ angular.module('cutvApiAdminApp')
                 sources: '='
             },
             templateUrl: '/wp-content/plugins/cutv-api/app/templates/manage-videos.html',
+
             controller: async function($scope, $element, $attrs) {
 
-                debugger;
                 $scope.options = [{
-                        name: 'Publish',
-                        value: 'publish'
+                        label: 'Publish',
+                        state: 'publish',
+                        color: 'green'
                     },
                     {
-                        name: 'Unpublish',
-                        value: 'draft'
+                        label: 'Unpublish',
+                        state: 'pending',
+                        color: 'purple'
                     },
                     {
-                        name: 'Trash',
-                        value: 'trash'
+                        label: 'Trash',
+                        state: 'draft',
+                        color: 'grey'
                     }
                 ];
                 $scope.selectedAction = $scope.options[0];
-
-                $scope.counts = {};
-                $scope.videos = {};
-                $scope.loaders = {};
-                $scope.selected = new Set();
-
                 $scope.toggles = {};
-                $scope.loading = true;
+                $scope.isLoading = true;
+
+                $scope.loaders = {};
+                $scope.videos = {};
+                $scope.selected = new Set();
+                $scope.channel.sources.forEach(data => {
+                    const source = data.source.wpvr_source_name;
+                    const pending = data.videos.pending;
+                    const publish = data.videos.publish;
+                    const draft = data.videos.draft;
+                    $scope.videos[source] = {
+                        pending,
+                        publish,
+                        draft,
+                        all: pending.concat(publish, draft),
+                        total: pending.length + publish.length + draft.length
+                    };
+                    // $scope.videos.all = $scope.videos.all.concat($scope.videos[source].all);
+                    $scope.loaders[source] = false;
+                    $scope.toggles[source] = {};
+                });
+
                 $scope.query = '';
-                const sources = $scope.sources.map(s => {
-                    $scope.counts[s.source_id] = {};
-                    $scope.loaders[s.source_id] = {};
-                    $scope.toggles[s.source_id] = {};
 
-                    return s.source_id;
-                });
+                $scope.update = () => {
+                    $scope.$emit('videosUpdated');
+                };
 
-                $scope.fetchVideos = async() => await ChannelService.getSourceVideos(sources).then((videos) => {
-                    // $scope.videos = videos;
-                    Object.keys(videos).forEach(source => {
-                        const sourceVideos = videos[source];
-                        const pending = Object.keys(videos[source]).filter(id => videos[source][id].status === 'pending').map(id => videos[source][id]);
-                        const published = Object.keys(videos[source]).filter(id => videos[source][id].status === 'publish').map(id => videos[source][id]);
-                        const unpublished = Object.keys(videos[source]).filter(id => videos[source][id].status === 'draft').map(id => videos[source][id]);
+                $scope.$on('reload', () => {
+                    $scope.isLoading = false;
+                })
 
-                        $scope.videos[source] = {
-                            pending: pending,
-                            published: published,
-                            unpublished: unpublished,
-                            all: pending.concat(published, unpublished),
-                            total: Object.keys(videos[source]).length
-                        };
-                        // $scope.videos.all = $scope.videos.all.concat($scope.videos[source].all);
-                        $scope.loaders[source] = false;
-                    });
-
-                    $scope.loading = false;
-                });
-                $scope.fetchVideos();
-
-                $scope.toggleVideoSelected = (video) => {
-                    if ($scope.selected.has(video.id)) {
-                        $scope.selected.delete(video.id);
+            },
+            link: function(scope, element, attrs) {
+                scope.isLoading = false;
+                scope.toggleVideoSelected = (video) => {
+                    if (scope.selected.has(video.ID)) {
+                        scope.selected.delete(video.ID);
                     } else {
-                        $scope.selected.add(video.id);
+                        scope.selected.add(video.ID);
                     }
                     video.selected = !video.selected;
-                    $scope.selectedVideos = Array.from($scope.selected);
+                    scope.selectedVideos = Array.from(scope.selected);
                 };
-                $scope.isVideoSelected = (id) => $scope.selected.has(id);
+                scope.isVideoSelected = (id) => scope.selected.has(id);
 
-                $scope.toggleSourceVideos = (source, state) => {
-                    $scope.toggles[source][state] = !$scope.toggles[source][state];
-                    $scope.videos[source][state].forEach(id => {
-                        let video = $scope.videos[source].all.find(vid => id === vid);
-
-                        $scope.toggleVideoSelected(video);
+                scope.toggleSourceVideos = (source, state) => {
+                    scope.toggles[source.name][state] = !scope.toggles[source.name][state];
+                    scope.videos[source.name][state].forEach(id => {
+                        let video = scope.videos[source.name].all.find(vid => id === vid);
+                        scope.toggleVideoSelected(video);
                     });
                 };
 
-
-                $scope.updateVideos = (method) => {
+                scope.updateVideos = (method) => {
+                    scope.isLoading = true;
+                    const videoString = Array.from(scope.selected).join(',');
                     var data = {
-                        method: method.value,
+                        method: method.state,
                         action: 'cutv_convert_snaptube',
-                        video_ids: Array.from($scope.selected).join(','),
+                        video_ids: videoString,
                     };
 
-                    debugger;
-                    ChannelService.handlePluginAction(data).then(res => {
-                        $scope.updateSuccess = true;
-                        $scope.fetchVideos();
+                    ChannelService.handlePluginAction(data).then(() => {
+                        Array.prototype.concat.apply([],
+                                Object.keys(scope.videos).map(sourceName => scope.videos[sourceName].all))
+                            .filter(v => videoString.includes(v.ID)).forEach(video => {
+                                scope.toggleVideoSelected(video);
+                                video.post_status = method.state;
+                            });
                     });
 
                 };
 
-                $scope.openSourceDialog = (source, action) => {
+                scope.openSourceDialog = (source, action) => {
 
                     switch (action) {
                         case 'edit':
@@ -125,24 +127,19 @@ angular.module('cutvApiAdminApp')
                                 var el = document.createElement('html');
                                 el.innerHTML = res.data;
                                 $(`#${action}Sources_${source.source_id}`).find('.content').html($(el.getElementsByClassName('wpvr_source_insights')).html());
-
                             });
                             break;
                         default:
-
 
                     }
                     $(`#${action}Sources_${source.source_id}`).modal('show');
 
 
                 };
-                $scope.closeSourceDialog = (source, action) => {
+                scope.closeSourceDialog = (source, action) => {
                     // todo: refetch channel videos
                     $(`#${action}Sources_${source.source_id}`).modal('hide');
                 }
-
-
-
             }
         };
     })

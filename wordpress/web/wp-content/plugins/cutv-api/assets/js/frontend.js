@@ -1,36 +1,36 @@
 var ajaxurl = '/wp-admin/admin-ajax.php';
 
+var data = [];
 $(document).ready(function() {
+
+    $('.page-wrapper .content').before('<div id="featured-channels" class="cutv-channels-top"></div>');
+
+    $('.primary-menu li:last()').append('<ul id="channel-links" class="channel-links-list"><li></li></ul>');
 
     _cutv.ajax(ajaxurl, {
         action: 'cutv_get_channels',
-        count: true,
-        exclude_sources: true,
+        count: 1,
+        exclude_sources: 1,
         json: true
     }).then(function(res) {
 
-        var channels = JSON.parse(res);
-        channels = channels.filter(function(channel) {
-            return !!channel.enabled;
-        });
-
-        $('.page-wrapper .content').before('<div id="featured-channels" class="cutv-channels-top"></div>');
+        data = JSON.parse(res);
 
         new LoadTemplate(
             'featured-channels',
             'channels-top-view', {
-                data: channels.filter(function(channel) {
-                    return !!channel.featured
+                data: data.filter(function(x) {
+                    return !!x.featured
                 })
             }).create();
 
-        $('.primary-menu li:last()').append('<ul id="channels-list" class="channel-links-list"><li></li></ul>');
         new LoadTemplate(
-            'channels-list',
-            'channels-list', {
-                data: channels
+            'channel-links',
+            'channel-list', {
+                data: data.filter(function(x) {
+                    return !!x.enabled;
+                })
             }).create();
-
     });
 
 });

@@ -47,14 +47,7 @@ function cutv_convert_snaptube() {
             $featured = 1;
             $status = ($method === 'publish' ? 1 : 0);
             $file_type = 1;
-            
-            // FORMAT DURATION
-            // $re = '/^PT(\d+H)?(\d+M)?(\d+S)?$/';
-            // $subst = '$1$2$3';
-            // $duration = substr(preg_replace('/\D/', ':', preg_replace($re, $subst, $video_meta['wpvr_video_duration'])), 0, -1);
             $duration = cutv_get_duration($wpvr_id);
-            echo $duration;
-            // exit;
 
             $converted_snaptube_video = array(
                 $name, 

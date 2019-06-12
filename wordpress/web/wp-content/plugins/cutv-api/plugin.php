@@ -11,11 +11,17 @@ Author URI: http://erratik.ca
 global $wpdb;
 
 define('CUTV_DEBUG_LEVEL', 3);
-function cutv_log($log_level, $log, $message = false) {
+function cutv_log($log_level, $log, $message = null) {
     
     if ($log_level >= CUTV_DEBUG_LEVEL) {
         if (gettype($log) == 'object' || gettype($log) == 'array') {
+            if ($message !== null) {
+                echo "∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ $message ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ∆ ", "\n";
+            }
             print_r($log);
+        } else if ($message !== null) {
+            echo "˚ ˚ ˚ ˚ ˚   $message   ˚ ˚ ˚ ˚ ˚", "\n";
+            echo $log;
         } else {
             echo $log;
         }

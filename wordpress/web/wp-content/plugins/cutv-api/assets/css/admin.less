@@ -104,7 +104,12 @@ a[href*="page=wpvr-manage"],
   }
 
   .ui.cards {
-    margin: -.875em 0.875em;
+    margin: 0;
+
+  }
+
+  [class*="card video-"] {
+    flex: 0 1 15%;
   }
 
   .ui.items>.item .meta {
@@ -137,7 +142,7 @@ a[href*="page=wpvr-manage"],
 
       >.header:not(.ui) {
         flex: 1;
-        margin-bottom: 0.5rem;
+        padding-right: 0.5rem;
       }
     }
 
@@ -163,6 +168,18 @@ a[href*="page=wpvr-manage"],
 }
 
 #videos {
+  article {
+    position: relative;
+
+    .loading-overlay {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      z-index: 4;
+    }
+  }
+
   article header {
     height: 5rem;
 
@@ -173,12 +190,18 @@ a[href*="page=wpvr-manage"],
       z-index: 3;
       top: 2.5rem;
 
-      .trigger {
-        padding: 0.3rem 0;
+      .multi-video-selector {
+        padding: 0 1rem;
+        height: 2rem;
+        align-items: center;
+        display: flex;
       }
 
       .list {
-        align-items: baseline;
+
+        align-items: center;
+        margin: 0;
+        height: 3rem;
       }
 
       .choices {
@@ -187,11 +210,17 @@ a[href*="page=wpvr-manage"],
         padding: 0 1rem;
 
         .item {
-          margin-bottom: 0.25rem;
+          margin-bottom: .25rem;
         }
 
         .button {
           width: 100%;
+
+          > :first-child {
+            width: 3rem;
+            padding: 0;
+            justify-content: center;
+          }
 
           &.ui.basic {
             background: white !important;
@@ -202,6 +231,8 @@ a[href*="page=wpvr-manage"],
       &:hover {
         .choices {
           display: flex;
+          align-self: flex-start;
+          margin-top: 0.5rem;
         }
       }
 
