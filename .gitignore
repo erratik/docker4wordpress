@@ -5,6 +5,7 @@ wordpress/*
 !wordpress/web
 
 wordpress/web/*
+!wordpress/web/wp-config.php
 !wordpress/web/wp-content
 
 wordpress/web/wp-content/*
